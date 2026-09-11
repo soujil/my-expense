@@ -6,7 +6,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,11 +25,11 @@ jobs:
         shell: bash
         run: |
           set -e
-
           mkdir -p android/app/src/main/java/com/soujil/myexpense
           mkdir -p android/app/src/main/assets
-
+          mkdir -p android/app/src/main/res/drawable
           cp index.html android/app/src/main/assets/index.html
+          cp icon-512.png android/app/src/main/res/drawable/app_icon.png
 
           cat > android/gradle.properties <<'EOF2'
           org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
@@ -45,7 +44,6 @@ jobs:
                   gradlePluginPortal()
               }
           }
-
           dependencyResolutionManagement {
               repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
               repositories {
@@ -53,7 +51,6 @@ jobs:
                   mavenCentral()
               }
           }
-
           rootProject.name = "MyExpenseAndroid"
           include(":app")
           EOF2
@@ -68,17 +65,15 @@ jobs:
           plugins {
               id 'com.android.application'
           }
-
           android {
               namespace 'com.soujil.myexpense'
               compileSdk 35
-
               defaultConfig {
                   applicationId 'com.soujil.myexpense'
                   minSdk 23
                   targetSdk 35
-                  versionCode 1
-                  versionName '1.0'
+                  versionCode 6
+                  versionName '1.0.6'
               }
           }
           EOF2
@@ -88,9 +83,10 @@ jobs:
               <application
                   android:theme="@android:style/Theme.Material.Light.NoActionBar"
                   android:label="My Expense"
+                  android:icon="@drawable/app_icon"
+                  android:roundIcon="@drawable/app_icon"
                   android:allowBackup="true"
                   android:supportsRtl="true">
-
                   <activity
                       android:name=".MainActivity"
                       android:screenOrientation="portrait"
@@ -109,9 +105,12 @@ jobs:
 
           import android.app.Activity;
           import android.os.Bundle;
+          import android.view.Window;
+          import android.view.WindowManager;
           import android.webkit.WebSettings;
           import android.webkit.WebView;
           import android.webkit.WebViewClient;
+          import android.graphics.Color;
 
           public class MainActivity extends Activity {
               private WebView webView;
@@ -119,14 +118,21 @@ jobs:
               @Override
               protected void onCreate(Bundle savedInstanceState) {
                   super.onCreate(savedInstanceState);
+                  Window w = getWindow();
+                  w.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                  w.setStatusBarColor(Color.rgb(243,247,244));
+                  w.setNavigationBarColor(Color.rgb(243,247,244));
+                  w.getDecorView().setSystemUiVisibility(0);
 
                   webView = new WebView(this);
-                  WebSettings settings = webView.getSettings();
-                  settings.setJavaScriptEnabled(true);
-                  settings.setDomStorageEnabled(true);
-                  settings.setAllowFileAccess(true);
-                  settings.setAllowContentAccess(true);
-
+                  WebSettings s = webView.getSettings();
+                  s.setJavaScriptEnabled(true);
+                  s.setDomStorageEnabled(true);
+                  s.setDatabaseEnabled(true);
+                  s.setAllowFileAccess(true);
+                  s.setAllowContentAccess(true);
+                  s.setBuiltInZoomControls(false);
+                  s.setDisplayZoomControls(false);
                   webView.setWebViewClient(new WebViewClient());
                   setContentView(webView);
                   webView.loadUrl("file:///android_asset/index.html");
@@ -134,11 +140,8 @@ jobs:
 
               @Override
               public void onBackPressed() {
-                  if (webView != null && webView.canGoBack()) {
-                      webView.goBack();
-                  } else {
-                      super.onBackPressed();
-                  }
+                  if (webView != null && webView.canGoBack()) webView.goBack();
+                  else super.onBackPressed();
               }
           }
           EOF2
