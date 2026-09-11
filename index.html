@@ -9,149 +9,147 @@
 <link rel="manifest" href="manifest.json">
 <title>My Expense</title>
 <style>
-:root{--g:#43a354;--g2:#2f7f3c;--bg:#f3f7f4;--card:#fff;--ink:#18211b;--muted:#718078;--line:#dfe7e1;--danger:#d84b4b;--shadow:0 8px 30px #17351a12}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;padding-bottom:92px}
-button,input,select,textarea{font:inherit}button{border:0;cursor:pointer} .wrap{max-width:760px;margin:auto;padding:20px 16px 120px}
-header{display:flex;justify-content:space-between;align-items:center;margin:8px 0 18px}h1{font-size:42px;margin:0;font-weight:800;letter-spacing:-1.5px}h2{margin:0 0 14px;font-size:26px}h3{margin:0 0 8px;font-size:18px}.sub{color:var(--muted);font-size:18px;margin-top:3px}
-.iconbtn{width:58px;height:58px;border-radius:18px;background:#fff;box-shadow:var(--shadow);font-size:25px}
-.card{background:var(--card);border-radius:28px;padding:20px;margin:14px 0;box-shadow:var(--shadow)}
-.hero{background:linear-gradient(145deg,#4aaa59,#347d40);color:#fff;padding:28px;border-radius:30px}.hero .big{font-size:50px;font-weight:800;margin:8px 0 18px}.tw{display:grid;grid-template-columns:1fr 1fr;gap:14px}.mini{background:#ffffff18;border-radius:20px;padding:14px}.mini b{display:block;font-size:25px;margin-top:5px}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}.stat{background:#fff;border-radius:24px;padding:20px;box-shadow:var(--shadow)}.stat b{font-size:27px;display:block;margin-top:5px}
-.tabs{display:flex;gap:8px;overflow:auto;margin:12px 0}.tab{padding:11px 15px;background:#e8eee9;border-radius:999px;white-space:nowrap}.tab.active{background:var(--g);color:#fff}
-label{display:block;font-weight:700;margin:14px 0 7px}.field{width:100%;padding:15px;border:1px solid var(--line);border-radius:17px;background:#fff;outline:none}.field:focus{border-color:#8bc896;box-shadow:0 0 0 3px #43a35422}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.btn{padding:15px 18px;border-radius:17px;background:#eaf0eb;font-weight:750}.primary{background:var(--g);color:#fff}.danger{background:#fdeaea;color:#b63232}.small{padding:10px 13px;border-radius:13px}.muted{color:var(--muted)}.right{float:right}
-.list{display:flex;flex-direction:column;gap:10px}.expense{display:grid;grid-template-columns:1fr auto;gap:10px;padding:15px;border:1px solid var(--line);border-radius:18px;background:#fff}.expense b{font-size:18px}.pill{display:inline-block;padding:5px 9px;border-radius:999px;background:#edf3ee;color:#55705c;font-size:12px;margin-top:5px}.money{font-weight:800;font-size:19px}.positive{color:#27883b}.negative{color:#c73c3c}
-.nav{position:fixed;z-index:20;bottom:0;left:0;right:0;background:#fffdfd;border-top:1px solid var(--line);padding:10px max(12px,env(safe-area-inset-left)) calc(10px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);box-shadow:0 -5px 25px #00000008}.nav button{background:none;color:#6f7b74;font-size:12px}.nav button span{display:block;font-size:24px;line-height:28px}.nav button.active{color:var(--g);font-weight:800}
-.hidden{display:none!important}.bar{height:12px;background:#e7eee8;border-radius:99px;overflow:hidden}.bar>i{display:block;height:100%;background:var(--g);border-radius:99px}.chart{display:flex;align-items:flex-end;gap:8px;height:170px;padding-top:10px}.col{flex:1;text-align:center;font-size:10px;color:var(--muted)}.col i{display:block;background:var(--g);border-radius:8px 8px 2px 2px;min-height:4px;margin-bottom:5px}
-.empty{text-align:center;padding:28px;color:var(--muted)}.sectionTitle{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
-.toast{position:fixed;z-index:50;bottom:95px;left:50%;transform:translateX(-50%);background:#18211b;color:#fff;padding:12px 18px;border-radius:999px;display:none}
-.modal{position:fixed;inset:0;background:#0008;z-index:40;display:flex;align-items:flex-end;justify-content:center}.sheet{background:#fff;width:100%;max-width:760px;border-radius:28px 28px 0 0;padding:24px;max-height:88vh;overflow:auto}
-@media(min-width:700px){.wrap{padding-top:35px}.nav{max-width:760px;left:50%;right:auto;transform:translateX(-50%);border:1px solid var(--line);border-radius:25px;bottom:18px}}
+:root{--g:#36a653;--g2:#237d3b;--bg:#f3f7f4;--card:#fff;--ink:#17211b;--muted:#718078;--line:#dfe8e1;--red:#d84b4b;--amber:#c78216;--blue:#3478c7;--shadow:0 8px 28px #17351a12}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;padding-bottom:105px}
+button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}.wrap{max-width:780px;margin:auto;padding:18px 16px 120px}
+header{display:flex;justify-content:space-between;align-items:center;margin:8px 0 18px}h1{font-size:38px;margin:0;font-weight:850;letter-spacing:-1.4px}h2{margin:0 0 14px;font-size:25px}h3{margin:0 0 8px;font-size:18px}.sub{color:var(--muted);font-size:17px;margin-top:3px}
+.iconbtn{width:54px;height:54px;border-radius:18px;background:#fff;box-shadow:var(--shadow);font-size:23px}.card{background:var(--card);border-radius:26px;padding:20px;margin:13px 0;box-shadow:var(--shadow)}
+.hero{background:linear-gradient(145deg,#48ad5b,#2f7d3e);color:#fff;padding:25px;border-radius:29px}.hero .big{font-size:46px;font-weight:850;margin:7px 0 18px}.tw,.stats,.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mini{background:#ffffff18;border-radius:19px;padding:13px}.mini b{display:block;font-size:23px;margin-top:4px}.stat{background:#fff;border-radius:22px;padding:18px;box-shadow:var(--shadow)}.stat b{font-size:25px;display:block;margin-top:5px}
+.tabs{display:flex;gap:8px;overflow:auto;margin:11px 0}.tab{padding:10px 14px;background:#e8eee9;border-radius:999px;white-space:nowrap}.tab.active{background:var(--g);color:#fff}
+label{display:block;font-weight:750;margin:13px 0 7px}.field{width:100%;padding:14px;border:1px solid var(--line);border-radius:16px;background:#fff;outline:none}.field:focus{border-color:#80c58d;box-shadow:0 0 0 3px #36a65320}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:11px}.btn{padding:13px 16px;border-radius:16px;background:#eaf0eb;font-weight:750}.primary{background:var(--g);color:#fff}.danger{background:#fdeaea;color:#b63232}.blue{background:#eaf2fc;color:#2767ad}.small{padding:9px 12px;border-radius:12px;font-size:14px}.right{float:right}.muted{color:var(--muted)}.center{text-align:center}
+.list{display:flex;flex-direction:column;gap:9px}.expense{display:grid;grid-template-columns:1fr auto;gap:10px;padding:14px;border:1px solid var(--line);border-radius:18px;background:#fff}.expense b{font-size:17px}.money{font-weight:850;font-size:18px}.pill{display:inline-block;padding:5px 9px;border-radius:999px;background:#edf3ee;color:#55705c;font-size:12px;margin-top:5px}.pill.pending{background:#fff3db;color:#99620c}.pill.submitted{background:#eaf2fc;color:#2767ad}.pill.approved{background:#eee9fc;color:#6c4aa4}.pill.received{background:#e7f7ea;color:#24763a}
+.sectionTitle{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:4px 0 12px}.bar{height:11px;background:#e7eee8;border-radius:99px;overflow:hidden}.bar>i{display:block;height:100%;background:var(--g);border-radius:99px}.chart{display:flex;align-items:flex-end;gap:6px;height:165px;padding-top:10px}.col{flex:1;text-align:center;font-size:10px;color:var(--muted);min-width:0}.col i{display:block;background:var(--g);border-radius:7px 7px 2px 2px;min-height:4px;margin-bottom:5px}
+.empty{text-align:center;padding:28px;color:var(--muted)}.nav{position:fixed;z-index:20;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:9px 10px calc(9px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);box-shadow:0 -5px 25px #00000008}.nav button{background:none;color:#6f7b74;font-size:11px}.nav button span{display:block;font-size:23px;line-height:27px}.nav button.active{color:var(--g);font-weight:800}
+.modal{position:fixed;inset:0;background:#0008;z-index:40;display:flex;align-items:flex-end;justify-content:center}.sheet{background:#fff;width:100%;max-width:780px;border-radius:28px 28px 0 0;padding:22px;max-height:90vh;overflow:auto}.toast{position:fixed;z-index:60;bottom:105px;left:50%;transform:translateX(-50%);background:#18211b;color:#fff;padding:11px 17px;border-radius:999px;display:none;white-space:nowrap}.dangerText{color:var(--red)}.successText{color:#27883b}.bigNumber{font-size:31px;font-weight:850}.kpi{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}.kpi:last-child{border-bottom:0}.photo{width:100%;max-height:220px;object-fit:contain;border-radius:16px;margin-top:10px;background:#f2f4f2}.monthNav{display:flex;align-items:center;justify-content:space-between;gap:8px}.monthNav button{width:42px;height:42px;border-radius:13px;background:#eaf0eb;font-size:20px}
+@media(min-width:700px){.wrap{padding-top:30px}.nav{max-width:780px;left:50%;right:auto;transform:translateX(-50%);border:1px solid var(--line);border-radius:24px;bottom:17px}.chart{height:190px}}
 </style>
 </head>
 <body>
 <div id="app"></div><div id="toast" class="toast"></div>
 <script>
-const KEY="myExpenseFullV1";
+const KEY="myExpenseFinalV1", OLD_KEY="myExpenseFullV1";
 const defaults={categories:["Food","Travel","Courier","Shopping","Bills","Office","Fuel","Other"],payments:["Cash","UPI","Card","Bank Transfer","Other"],companies:[]};
-let db=JSON.parse(localStorage.getItem(KEY)||"null")||{expenses:[],budget:0,categories:defaults.categories,payments:defaults.payments,companies:[],pin:"",locked:false};
-db.categories=db.categories?.length?db.categories:defaults.categories;db.payments=db.payments?.length?db.payments:defaults.payments;db.companies=db.companies||[];
-let page="home", editId=null;
+let saved=localStorage.getItem(KEY);
+let legacy=!saved?JSON.parse(localStorage.getItem(OLD_KEY)||"null"):null;
+let db=JSON.parse(saved||"null")||((legacy&&Array.isArray(legacy.expenses))?{
+  expenses:legacy.expenses,budgets:legacy.budget?{[new Date().toISOString().slice(0,7)]:Number(legacy.budget)}:{},
+  categories:legacy.categories||[...defaults.categories],payments:legacy.payments||[...defaults.payments],
+  companies:legacy.companies||[],pin:legacy.pin||"",locked:false
+}:{expenses:[],budgets:{},categories:[...defaults.categories],payments:[...defaults.payments],companies:[],pin:"",locked:false});
+if(!saved&&legacy)localStorage.setItem(KEY,JSON.stringify(db));
+db.categories=db.categories?.length?db.categories:[...defaults.categories];
+db.payments=db.payments?.length?db.payments:[...defaults.payments];
+db.companies=db.companies||[];db.budgets=db.budgets||{};
+let page="home",editId=null,selectedMonth=currentMonth(),filterType="all",filterCat="All",searchText="",modalHTML="";
+
 const save=()=>localStorage.setItem(KEY,JSON.stringify(db));
 const money=n=>"₹"+Number(n||0).toLocaleString("en-IN",{maximumFractionDigits:2});
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
-const monthKey=d=>new Date(d).toISOString().slice(0,7);
-const monthName=k=>new Date(k+"-01").toLocaleDateString("en-IN",{month:"long",year:"numeric"});
-function toast(s){let t=document.getElementById("toast");t.textContent=s;t.style.display="block";setTimeout(()=>t.style.display="none",2200)}
-function go(p){page=p;render()}
-function currentMonth(){return new Date().toISOString().slice(0,7)}
-function monthExpenses(k=currentMonth()){return db.expenses.filter(e=>monthKey(e.date)===k)}
-function total(arr){return arr.reduce((a,e)=>a+Number(e.amount||0),0)}
-function render(){
- if(db.locked&&db.pin){document.getElementById("app").innerHTML=lockHTML();return}
- document.getElementById("app").innerHTML=`
- <div class="wrap">
-  <header><div><h1>My Expense</h1><div class="sub">${monthName(currentMonth())}</div></div><button class="iconbtn" onclick="go('settings')">⚙️</button></header>
-  <main>${page==="home"?home():page==="add"?add():page==="expenses"?expenses():page==="reports"?reports():budgetPage()}</main>
- </div>
- ${nav()}
- ${modal()}
- `;
-}
+const dateKey=d=>String(d).slice(0,7);
+const currentMonth=()=>{let d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")};
+const monthName=k=>new Date(k+"-01T00:00:00").toLocaleDateString("en-IN",{month:"long",year:"numeric"});
+const total=a=>a.reduce((s,e)=>s+Number(e.amount||0),0);
+const monthExpenses=(k=selectedMonth)=>db.expenses.filter(e=>dateKey(e.date)===k);
+function toast(s){let t=document.getElementById("toast");t.textContent=s;t.style.display="block";clearTimeout(window.tt);window.tt=setTimeout(()=>t.style.display="none",2200)}
+function changeMonth(delta){let d=new Date(selectedMonth+"-01T00:00:00");d.setMonth(d.getMonth()+delta);selectedMonth=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");render()}
+function go(p){page=p;editId=null;modalHTML="";render()}
 function nav(){return `<nav class="nav">${[["home","⌂","Home"],["add","+","Add"],["expenses","☷","Expenses"],["reports","◔","Reports"],["budget","▣","Budget"]].map(x=>`<button class="${page===x[0]?'active':''}" onclick="go('${x[0]}')"><span>${x[1]}</span>${x[2]}</button>`).join("")}</nav>`}
+function top(title,sub=monthName(selectedMonth)){return `<header><div><h1>${esc(title)}</h1><div class="sub">${esc(sub)}</div></div><button class="iconbtn" onclick="go('settings')">⚙️</button></header>`}
+function monthPicker(){return `<div class="monthNav"><button onclick="changeMonth(-1)">‹</button><b>${monthName(selectedMonth)}</b><button onclick="changeMonth(1)">›</button></div>`}
+function render(){if(db.locked&&db.pin){document.getElementById("app").innerHTML=lockHTML();return}
+let content=page==="home"?home():page==="add"?add():page==="expenses"?expenses():page==="reports"?reports():page==="budget"?budgetPage():settingsPage();
+document.getElementById("app").innerHTML=`<div class="wrap">${content}</div>${nav()}${modalHTML?`<div class="modal" onclick="if(event.target===this)closeModal()"><div class="sheet">${modalHTML}</div></div>`:""}`}
+
 function home(){
- let es=monthExpenses(), spent=total(es), personal=total(es.filter(e=>e.type==="personal")), company=total(es.filter(e=>e.type==="company")), pending=total(es.filter(e=>e.type==="company"&&e.reimbursement!=="received")), received=total(es.filter(e=>e.type==="company"&&e.reimbursement==="received"));
- let pct=db.budget?Math.min(100,spent/db.budget*100):0;
- return `<section class="hero"><div>Monthly spending</div><div class="big">${money(spent)}</div><div class="tw"><div class="mini">Personal<b>${money(personal)}</b></div><div class="mini">Company<b>${money(company)}</b></div></div></section>
- <div class="stats"><div class="stat">Pending reimbursement<b>${money(pending)}</b></div><div class="stat">Received back<b>${money(received)}</b></div></div>
- <div class="card"><h3>Monthly budget <button class="btn small right" onclick="go('budget')">Set</button></h3><div class="muted">${db.budget?money(db.budget):"Not set"}</div><div class="bar" style="margin-top:12px"><i style="width:${pct}%"></i></div></div>
- <div class="card"><div class="sectionTitle"><h2>Recent expenses</h2><button class="btn small" onclick="go('expenses')">View all</button></div>${list(es.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5))}</div>
- ${pageSettingsHint()}`;
+let es=monthExpenses(),spent=total(es),personal=total(es.filter(e=>e.type==="personal")),company=total(es.filter(e=>e.type==="company")),pending=total(es.filter(e=>e.type==="company"&&e.reimbursement!=="received")),received=total(es.filter(e=>e.type==="company"&&e.reimbursement==="received")),budget=Number(db.budgets[selectedMonth]||0),pct=budget?Math.min(100,spent/budget*100):0;
+let today=new Date().toISOString().slice(0,10),todayTotal=total(es.filter(e=>e.date===today));
+return `${top("My Expense")}
+<section class="hero"><div>${monthName(selectedMonth)} spending</div><div class="big">${money(spent)}</div><div class="tw"><div class="mini">Personal<b>${money(personal)}</b></div><div class="mini">Company<b>${money(company)}</b></div></div></section>
+<div class="stats"><div class="stat">Today<b>${money(todayTotal)}</b></div><div class="stat">Pending reimbursement<b>${money(pending)}</b></div></div>
+<div class="card"><div class="sectionTitle"><h3>Monthly budget</h3><button class="btn small" onclick="go('budget')">Set</button></div><div class="bigNumber">${budget?money(budget):"Not set"}</div><div class="muted">${budget?money(Math.max(0,budget-spent))+" remaining":"Set a budget to track limits"}</div><div class="bar" style="margin-top:12px"><i style="width:${pct}%"></i></div></div>
+<div class="card"><div class="sectionTitle"><h2>Recent expenses</h2><button class="btn small" onclick="go('expenses')">View all</button></div>${list(es.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5))}</div>
+<div class="card"><h3>Quick actions</h3><div class="grid2"><button class="btn primary" onclick="go('add')">+ Add expense</button><button class="btn" onclick="go('reports')">View reports</button></div></div>`;
 }
-function pageSettingsHint(){return `<div class="card"><h3>Quick setup</h3><div class="muted">Customize categories, payment methods, companies and security from Settings.</div><button class="btn" style="margin-top:12px" onclick="go('settings')">Open Settings</button></div>`}
+
 function add(){
- let e=db.expenses.find(x=>x.id===editId)||{type:(window._addType||"personal"),amount:"",category:db.categories[0],payment:db.payments[0],date:new Date().toISOString().slice(0,10),note:"",company:"",reimbursement:"pending",receipt:""};
- return `<div class="card"><div class="sectionTitle"><h2>${editId?"Edit expense":"Add expense"}</h2><button class="btn small" onclick="go('home')">Cancel</button></div>
- <div class="tabs">${["personal","company"].map(t=>`<button id="type-${t}" class="tab ${e.type===t?'active':''}" onclick="setType('${t}')">${t==="personal"?"Personal":"Company / Reimbursement"}</button>`).join("")}</div>
- <form onsubmit="event.preventDefault();submitExpense()">
- <label>Amount</label><input id="amount" class="field" inputmode="decimal" type="number" step="0.01" value="${esc(e.amount)}" required placeholder="0">
- <label>Category <button type="button" class="btn small right" onclick="customize('category')">Customize</button></label><select id="category" class="field">${db.categories.map(x=>`<option ${x===e.category?'selected':''}>${esc(x)}</option>`).join("")}</select>
- <div class="row"><div><label>Payment method</label><select id="payment" class="field">${db.payments.map(x=>`<option ${x===e.payment?'selected':''}>${esc(x)}</option>`).join("")}</select></div><div><label>Date</label><input id="date" class="field" type="date" value="${e.date}"></div></div>
- ${e.type==="company"?companyFields(e):""}
- <label>Note</label><textarea id="note" class="field" rows="3" placeholder="Optional details">${esc(e.note)}</textarea>
- <label>Bill / receipt</label><input id="receipt" class="field" type="file" accept="image/*" capture="environment">
- ${e.receipt?`<div class="muted" style="margin-top:8px">Receipt attached ✓</div>`:""}
- <button class="btn primary" style="width:100%;margin-top:18px">${editId?"Update expense":"Save expense"}</button></form></div>`;
+let e=db.expenses.find(x=>x.id===editId)||{type:window._addType||"personal",amount:"",category:db.categories[0],payment:db.payments[0],date:new Date().toISOString().slice(0,10),note:"",company:"",reimbursement:"pending",receipt:""};
+return `<div class="card">${monthPicker()}<div class="sectionTitle" style="margin-top:18px"><h2>${editId?"Edit expense":"Add expense"}</h2><button class="btn small" onclick="go('home')">Cancel</button></div>
+<div class="tabs">${["personal","company"].map(t=>`<button class="tab ${e.type===t?'active':''}" onclick="setType('${t}')">${t==="personal"?"Personal":"Company / Reimbursement"}</button>`).join("")}</div>
+<form onsubmit="event.preventDefault();submitExpense()">
+<label>Amount</label><input id="amount" class="field" inputmode="decimal" type="number" step="0.01" value="${esc(e.amount)}" required placeholder="0">
+<label>Category <button type="button" class="btn small right" onclick="customize('category')">Customize</button></label><select id="category" class="field">${db.categories.map(x=>`<option value="${esc(x)}" ${x===e.category?'selected':''}>${esc(x)}</option>`).join("")}</select>
+<div class="row"><div><label>Payment method <button type="button" class="btn small right" onclick="customize('payment')">Edit</button></label><select id="payment" class="field">${db.payments.map(x=>`<option value="${esc(x)}" ${x===e.payment?'selected':''}>${esc(x)}</option>`).join("")}</select></div><div><label>Date</label><input id="date" class="field" type="date" value="${esc(e.date)}" required></div></div>
+${e.type==="company"?companyFields(e):""}
+<label>Note</label><textarea id="note" class="field" rows="3" placeholder="Optional details">${esc(e.note)}</textarea>
+<label>Bill / receipt photo</label><input id="receipt" class="field" type="file" accept="image/*" capture="environment">${e.receipt?`<img class="photo" src="${e.receipt}" alt="Receipt"><button type="button" class="btn danger small" style="margin-top:8px" onclick="clearReceipt()">Remove photo</button>`:""}
+<button class="btn primary" style="width:100%;margin-top:18px">${editId?"Update expense":"Save expense"}</button></form></div>`;
 }
-function companyFields(e){return `<label>Company</label><select id="company" class="field"><option value="">Select company</option>${db.companies.map(x=>`<option ${x===e.company?'selected':''}>${esc(x)}</option>`).join("")}</select>
- <label>Reimbursement status</label><select id="reimbursement" class="field"><option value="pending" ${e.reimbursement==="pending"?'selected':''}>Pending</option><option value="submitted" ${e.reimbursement==="submitted"?'selected':''}>Submitted</option><option value="approved" ${e.reimbursement==="approved"?'selected':''}>Approved</option><option value="received" ${e.reimbursement==="received"?'selected':''}>Received back</option></select>`}
+function companyFields(e){return `<label>Company <button type="button" class="btn small right" onclick="companiesModal()">Manage</button></label><select id="company" class="field"><option value="">Select company</option>${db.companies.map(x=>`<option value="${esc(x)}" ${x===e.company?'selected':''}>${esc(x)}</option>`).join("")}</select>
+<label>Reimbursement status</label><select id="reimbursement" class="field"><option value="pending" ${e.reimbursement==="pending"?'selected':''}>Pending</option><option value="submitted" ${e.reimbursement==="submitted"?'selected':''}>Submitted</option><option value="approved" ${e.reimbursement==="approved"?'selected':''}>Approved</option><option value="received" ${e.reimbursement==="received"?'selected':''}>Received back</option></select>`}
 function setType(t){window._addType=t;render()}
 window._addType=null;
 function submitExpense(){
- let type=window._addType||document.querySelector(".tab.active")?.id?.replace("type-","")||"personal";
- let f=id=>document.getElementById(id)?.value||"";
- let file=document.getElementById("receipt")?.files?.[0];
- const finish=(receipt)=>{
-  let e={id:editId||Date.now().toString(),type,amount:Number(f("amount")),category:f("category"),payment:f("payment"),date:f("date")||new Date().toISOString().slice(0,10),note:f("note"),company:type==="company"?f("company"):"",reimbursement:type==="company"?f("reimbursement"):"",receipt:receipt||""};
-  if(!e.amount){toast("Enter amount");return}
-  let i=db.expenses.findIndex(x=>x.id===e.id); if(i>=0)db.expenses[i]=e;else db.expenses.push(e);save();editId=null;window._addType=null;toast("Saved");go("expenses");
- };
- if(file){let r=new FileReader();r.onload=()=>finish(r.result);r.readAsDataURL(file)}else finish(db.expenses.find(x=>x.id===editId)?.receipt||"");
+let type=window._addType||document.querySelector(".tab.active")?.textContent.includes("Company")?"company":"personal";
+if(window._addType)type=window._addType;
+let f=id=>document.getElementById(id)?.value||"",file=document.getElementById("receipt")?.files?.[0];
+const finish=receipt=>{let old=db.expenses.find(x=>x.id===editId);let e={id:editId||Date.now().toString(),type,amount:Number(f("amount")),category:f("category"),payment:f("payment"),date:f("date"),note:f("note"),company:type==="company"?f("company"):"",reimbursement:type==="company"?f("reimbursement"):"",receipt:receipt||(old?.receipt||"")};if(!e.amount){toast("Enter amount");return}if(type==="company"&&!e.company){toast("Select company");return}let i=db.expenses.findIndex(x=>x.id===e.id);if(i>=0)db.expenses[i]=e;else db.expenses.push(e);save();editId=null;window._addType=null;selectedMonth=dateKey(e.date);toast(i>=0?"Expense updated":"Expense saved");go("expenses")};
+if(file){let r=new FileReader();r.onload=()=>finish(r.result);r.readAsDataURL(file)}else finish("");
 }
-function list(es){
- if(!es.length)return `<div class="empty">No expenses yet.</div>`;
- return `<div class="list">${es.map(e=>`<div class="expense"><div><b>${esc(e.category)}</b><div class="muted">${new Date(e.date).toLocaleDateString("en-IN")} · ${esc(e.payment)} ${e.company?`· ${esc(e.company)}`:""}</div><span class="pill">${e.type==="company"?"Company · "+esc(e.reimbursement):"Personal"}</span>${e.note?`<div class="muted">${esc(e.note)}</div>`:""}</div><div style="text-align:right"><div class="money">${money(e.amount)}</div><button class="btn small" onclick="edit('${e.id}')">Edit</button> <button class="btn danger small" onclick="del('${e.id}')">×</button></div></div>`).join("")}</div>`;
-}
+function clearReceipt(){let e=db.expenses.find(x=>x.id===editId);if(e){e.receipt="";save()}render()}
+
+function list(es){if(!es.length)return `<div class="empty">No expenses found.</div>`;return `<div class="list">${es.map(e=>`<div class="expense"><div><b>${esc(e.category)}</b><div class="muted">${new Date(e.date+"T00:00:00").toLocaleDateString("en-IN")} · ${esc(e.payment)} ${e.company?`· ${esc(e.company)}`:""}</div><span class="pill ${e.reimbursement||""}">${e.type==="company"?"Company · "+esc(statusLabel(e.reimbursement)):"Personal"}</span>${e.note?`<div class="muted" style="margin-top:5px">${esc(e.note)}</div>`:""}${e.receipt?`<div class="successText" style="margin-top:5px">🧾 Receipt attached</div>`:""}</div><div style="text-align:right"><div class="money">${money(e.amount)}</div><button class="btn small" onclick="edit('${e.id}')">Edit</button> <button class="btn danger small" onclick="delExpense('${e.id}')">×</button></div></div>`).join("")}</div>`}
+function statusLabel(s){return ({pending:"Pending",submitted:"Submitted",approved:"Approved",received:"Received back"})[s]||s}
+
 function expenses(){
- let es=[...db.expenses].sort((a,b)=>b.date.localeCompare(a.date)), cats=["All",...db.categories];
- return `<div class="sectionTitle"><h2>Expenses</h2><button class="btn primary small" onclick="editId=null;window._addType=null;go('add')">+ Add</button></div>
- <div class="card"><input id="search" class="field" placeholder="Search category, company or note" oninput="filterExpenses()"><div class="tabs">${cats.map((x,i)=>`<button class="tab ${i===0?'active':''}" onclick="filterCat('${esc(x)}',this)">${esc(x)}</button>`).join("")}</div><div id="expenseList">${list(es)}</div></div>`;
+let es=[...db.expenses].sort((a,b)=>b.date.localeCompare(a.date)),cats=["All",...db.categories],filtered=es.filter(e=>(filterCat==="All"||e.category===filterCat)&&(filterType==="all"||e.type===filterType)&&JSON.stringify(e).toLowerCase().includes(searchText));
+return `${top("Expenses",`${db.expenses.length} total transactions`)}<div class="card"><div class="row"><input id="search" class="field" value="${esc(searchText)}" placeholder="Search..." oninput="filterNow()"><button class="btn primary" onclick="go('add')">+ Add</button></div>
+<div class="tabs">${[["all","All"],["personal","Personal"],["company","Company"]].map(x=>`<button class="tab ${filterType===x[0]?'active':''}" onclick="setFilterType('${x[0]}')">${x[1]}</button>`).join("")}</div>
+<div class="tabs">${cats.map(x=>`<button class="tab ${filterCat===x?'active':''}" onclick="setFilterCat('${esc(x)}')">${esc(x)}</button>`).join("")}</div>${list(filtered)}</div>`;
 }
-let selectedCat="All", searchText="";
-function filterCat(c,b){selectedCat=c;document.querySelectorAll(".tabs .tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");filterExpenses()}
-function filterExpenses(){searchText=document.getElementById("search")?.value?.toLowerCase()||"";let es=db.expenses.filter(e=>(selectedCat==="All"||e.category===selectedCat)&&JSON.stringify(e).toLowerCase().includes(searchText)).sort((a,b)=>b.date.localeCompare(a.date));document.getElementById("expenseList").innerHTML=list(es)}
-function edit(id){editId=id;window._addType=db.expenses.find(e=>e.id===id)?.type||"personal";go("add")}
-function del(id){if(confirm("Delete this expense?")){db.expenses=db.expenses.filter(e=>e.id!==id);save();render();toast("Deleted")}}
+function filterNow(){searchText=document.getElementById("search")?.value?.toLowerCase()||"";render()}
+function setFilterType(x){filterType=x;render()} function setFilterCat(x){filterCat=x;render()}
+function edit(id){editId=id;window._addType=db.expenses.find(e=>e.id===id)?.type||"personal";page="add";render()}
+function delExpense(id){if(confirm("Delete this expense?")){db.expenses=db.expenses.filter(e=>e.id!==id);save();render();toast("Deleted")}}
+
 function reports(){
- let es=monthExpenses(), cats={};es.forEach(e=>cats[e.category]=(cats[e.category]||0)+Number(e.amount));let max=Math.max(1,...Object.values(cats));
- let days={};es.forEach(e=>days[e.date]=(days[e.date]||0)+Number(e.amount));
- return `<h2>Reports</h2><div class="card"><div class="sectionTitle"><div><h3>${monthName(currentMonth())}</h3><div class="muted">${es.length} transactions · ${money(total(es))}</div></div><button class="btn small" onclick="exportCSV()">CSV</button></div>
- <div class="chart">${Object.entries(days).slice(-14).map(([d,v])=>`<div class="col"><i style="height:${Math.max(5,v/Math.max(...Object.values(days))*120)}px"></i>${new Date(d).getDate()}</div>`).join("")}</div></div>
- <div class="card"><h3>Category breakdown</h3>${Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([c,v])=>`<div style="margin:14px 0"><div><b>${esc(c)}</b><span class="right">${money(v)}</span></div><div class="bar"><i style="width:${v/max*100}%"></i></div></div>`).join("")||`<div class="empty">No data for this month.</div>`}</div>
- <div class="card"><h3>Company reimbursement</h3>${reimbursementSummary(es)}</div>
- <div class="card"><h3>Monthly report</h3><div class="muted">Use Print / Save as PDF to keep a monthly report.</div><button class="btn primary" style="margin-top:12px" onclick="printReport()">Print / Save PDF</button></div>`;
+let es=monthExpenses(),cats={};es.forEach(e=>cats[e.category]=(cats[e.category]||0)+Number(e.amount));let days={};es.forEach(e=>days[e.date]=(days[e.date]||0)+Number(e.amount));let vals=Object.values(days),max=Math.max(1,...Object.values(cats)),dayMax=Math.max(1,...vals),company=es.filter(e=>e.type==="company");
+return `${top("Reports")}<div class="card">${monthPicker()}</div>
+<div class="stats"><div class="stat">Transactions<b>${es.length}</b></div><div class="stat">Total spent<b>${money(total(es))}</b></div></div>
+<div class="card"><h3>Daily spending</h3><div class="chart">${Object.entries(days).slice(-14).map(([d,v])=>`<div class="col"><i style="height:${Math.max(5,v/dayMax*125)}px"></i>${new Date(d+"T00:00:00").getDate()}</div>`).join("")||`<div class="empty">No data this month.</div>`}</div></div>
+<div class="card"><h3>Category breakdown</h3>${Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([c,v])=>`<div style="margin:13px 0"><div><b>${esc(c)}</b><span class="right">${money(v)}</span></div><div class="bar" style="margin-top:6px"><i style="width:${v/max*100}%"></i></div></div>`).join("")||`<div class="empty">No data this month.</div>`}</div>
+<div class="card"><h3>Company reimbursement</h3>${reimbursementSummary(company)}</div>
+<div class="card"><h3>Monthly report</h3><p class="muted">Print or save this month as PDF.</p><div class="grid2"><button class="btn primary" onclick="printReport()">Print / PDF</button><button class="btn" onclick="exportCSV()">Export CSV</button></div></div>`;
 }
-function reimbursementSummary(es){let cs={};es.filter(e=>e.type==="company").forEach(e=>{let k=e.company||"Unassigned";cs[k]=cs[k]||{spent:0,pending:0,received:0};cs[k].spent+=+e.amount;if(e.reimbursement==="received")cs[k].received+=+e.amount;else cs[k].pending+=+e.amount});return Object.entries(cs).map(([c,x])=>`<div class="expense" style="margin:9px 0"><div><b>${esc(c)}</b><div class="muted">Spent ${money(x.spent)}</div></div><div>Pending ${money(x.pending)}<br><span class="positive">Received ${money(x.received)}</span></div></div>`).join("")||`<div class="empty">No company expenses this month.</div>`}
-function budgetPage(){let spent=total(monthExpenses()),pct=db.budget?Math.min(100,spent/db.budget*100):0;return `<h2>Budget</h2><div class="card"><h3>Monthly budget</h3><input id="budget" class="field" type="number" inputmode="decimal" value="${db.budget||""}" placeholder="e.g. 30000"><button class="btn primary" style="width:100%;margin-top:12px" onclick="setBudget()">Save budget</button><div style="margin-top:20px"><div class="muted">Spent ${money(spent)} of ${db.budget?money(db.budget):"—"}</div><div class="bar" style="margin-top:8px"><i style="width:${pct}%"></i></div></div></div>
- <div class="card"><h3>Backup & restore</h3><button class="btn" onclick="exportJSON()">Export backup</button> <label class="btn" style="display:inline-block">Import backup<input type="file" accept=".json,application/json" style="display:none" onchange="importJSON(event)"></label></div>`}
-function setBudget(){db.budget=Number(document.getElementById("budget").value)||0;save();toast("Budget saved");render()}
-function exportCSV(){let rows=[["Date","Type","Category","Amount","Payment","Company","Reimbursement","Note"],...db.expenses.map(e=>[e.date,e.type,e.category,e.amount,e.payment,e.company,e.reimbursement,e.note])];let csv=rows.map(r=>r.map(x=>`"${String(x??"").replaceAll('"','""')}"`).join(",")).join("\n");download("my-expenses.csv","text/csv",csv)}
-function exportJSON(){download("my-expense-backup.json","application/json",JSON.stringify(db,null,2))}
-function download(name,type,data){let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
-function importJSON(ev){let f=ev.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!x.expenses||!Array.isArray(x.expenses))throw 0;db=x;save();render();toast("Backup restored")}catch{toast("Invalid backup")}};r.readAsText(f)}
-function printReport(){let old=document.body.innerHTML;document.body.innerHTML=`<div style="font-family:Arial;padding:30px"><h1>My Expense — ${monthName(currentMonth())}</h1><h2>Total: ${money(total(monthExpenses()))}</h2>${list(monthExpenses())}</div>`;window.print();location.reload()}
-function settings(){return ""}
-function modal(){return window._modal?`<div class="modal" onclick="if(event.target===this)closeModal()"><div class="sheet">${window._modal}</div></div>`:""}
-function customize(kind){
- let arr=kind==="category"?db.categories:db.payments; window._modal=`<h2>Customize ${kind==="category"?"Categories":"Payment methods"}</h2><div id="customList">${arr.map((x,i)=>`<div class="expense" style="margin:8px 0"><input class="field" value="${esc(x)}" data-i="${i}"><button class="btn danger" onclick="removeCustom('${kind}',${i})">Delete</button></div>`).join("")}</div><button class="btn primary" style="margin-top:10px" onclick="addCustom('${kind}')">+ Add new</button> <button class="btn" onclick="saveCustom('${kind}')">Save</button> <button class="btn" onclick="closeModal()">Close</button>`;render()}
+function reimbursementSummary(es){let cs={};es.forEach(e=>{let k=e.company||"Unassigned";cs[k]=cs[k]||{spent:0,pending:0,received:0};cs[k].spent+=+e.amount;if(e.reimbursement==="received")cs[k].received+=+e.amount;else cs[k].pending+=+e.amount});return Object.entries(cs).map(([c,x])=>`<div class="expense" style="margin:9px 0"><div><b>${esc(c)}</b><div class="muted">Spent ${money(x.spent)}</div></div><div>Pending ${money(x.pending)}<br><span class="successText">Received ${money(x.received)}</span></div></div>`).join("")||`<div class="empty">No company expenses this month.</div>`}
+
+function budgetPage(){let spent=total(monthExpenses()),budget=Number(db.budgets[selectedMonth]||0),pct=budget?Math.min(100,spent/budget*100):0;return `${top("Budget")}<div class="card">${monthPicker()}<label>Monthly budget</label><input id="budget" class="field" type="number" inputmode="decimal" value="${budget||""}" placeholder="e.g. 30000"><button class="btn primary" style="width:100%;margin-top:12px" onclick="setBudget()">Save budget</button><div style="margin-top:18px" class="muted">Spent ${money(spent)} ${budget?"of "+money(budget):""}</div><div class="bar" style="margin-top:8px"><i style="width:${pct}%"></i></div>${budget?`<div style="margin-top:10px" class="${spent>budget?"dangerText":"successText"}">${spent>budget?money(spent-budget)+" over budget":money(budget-spent)+" remaining"}</div>`:""}</div>
+<div class="card"><h3>Data backup</h3><p class="muted">Keep a backup before changing device or browser data.</p><div class="grid2"><button class="btn" onclick="exportJSON()">Export backup</button><label class="btn center">Import backup<input type="file" accept=".json,application/json" style="display:none" onchange="importJSON(event)"></label></div></div>`}
+function setBudget(){db.budgets[selectedMonth]=Number(document.getElementById("budget").value)||0;save();toast("Budget saved");render()}
+
+function settingsPage(){return `${top("Settings","Customize your app")}<div class="card"><h3>Customize dropdowns</h3><p class="muted">Change the lists you use while adding expenses.</p><div class="grid2"><button class="btn" onclick="customize('category')">Categories</button><button class="btn" onclick="customize('payment')">Payment methods</button></div><button class="btn" style="margin-top:10px;width:100%" onclick="companiesModal()">Companies</button></div>
+<div class="card"><h3>Security</h3>${db.pin?`<button class="btn danger" onclick="removePin()">Remove PIN lock</button>`:`<button class="btn" onclick="setPin()">Set PIN lock</button>`}</div>
+<div class="card"><h3>Backup & export</h3><div class="grid2"><button class="btn" onclick="exportJSON()">Export JSON</button><button class="btn" onclick="exportCSV()">Export CSV</button></div></div>
+<div class="card"><h3>About</h3><div class="muted">My Expense — personal + company reimbursement tracker. Data is stored on this device/browser unless you export a backup.</div></div>`}
+
+function customize(kind){let arr=kind==="category"?db.categories:db.payments;modalHTML=`<h2>Customize ${kind==="category"?"Categories":"Payment methods"}</h2><div id="customList">${arr.map((x,i)=>`<div class="expense" style="margin:8px 0"><input class="field" value="${esc(x)}" data-i="${i}"><button class="btn danger" onclick="removeCustom('${kind}',${i})">Delete</button></div>`).join("")}</div><button class="btn primary" style="margin-top:10px" onclick="addCustom('${kind}')">+ Add new</button> <button class="btn" onclick="saveCustom('${kind}')">Save</button> <button class="btn" onclick="closeModal()">Close</button>`;render()}
 function addCustom(kind){let a=kind==="category"?db.categories:db.payments;a.push("New item");customize(kind)}
 function removeCustom(kind,i){let a=kind==="category"?db.categories:db.payments;if(a.length<=1){toast("Keep at least one");return}a.splice(i,1);customize(kind)}
-function saveCustom(kind){let a=kind==="category"?db.categories:db.payments;document.querySelectorAll("#customList input").forEach((el,i)=>a[i]=el.value.trim()||a[i]);a=[...new Set(a)];if(kind==="category")db.categories=a;else db.payments=a;save();window._modal=null;render();toast("Customized")}
-function closeModal(){window._modal=null;render()}
-function settingsPage(){
- return `<h2>Settings</h2><div class="card"><h3>Customize dropdowns</h3><button class="btn" onclick="customize('category')">Categories</button> <button class="btn" onclick="customize('payment')">Payment methods</button><button class="btn" style="margin-top:10px" onclick="companiesModal()">Companies</button></div>
- <div class="card"><h3>Security</h3>${db.pin?`<button class="btn danger" onclick="removePin()">Remove PIN</button>`:`<button class="btn" onclick="setPin()">Set PIN lock</button>`}</div>
- <div class="card"><h3>Data</h3><button class="btn" onclick="exportJSON()">Export backup</button><label class="btn" style="display:inline-block">Import backup<input type="file" accept=".json" style="display:none" onchange="importJSON(event)"></label></div>
- <div class="card"><h3>About</h3><div class="muted">My Expense — personal + company reimbursement tracker. Data stays on this device/browser unless you export it.</div></div>`;
-}
-function companiesModal(){window._modal=`<h2>Companies</h2>${db.companies.map((x,i)=>`<div class="expense" style="margin:8px 0"><span>${esc(x)}</span><button class="btn danger" onclick="db.companies.splice(${i},1);save();companiesModal()">Delete</button></div>`).join("")}<input id="newCompany" class="field" placeholder="Company name"><button class="btn primary" style="margin-top:10px" onclick="let v=document.getElementById('newCompany').value.trim();if(v){db.companies.push(v);save();companiesModal()}">+ Add company</button> <button class="btn" onclick="closeModal()">Close</button>`;render()}
-function setPin(){window._modal=`<h2>Set PIN</h2><input id="pin1" class="field" type="password" inputmode="numeric" maxlength="6" placeholder="4–6 digit PIN"><button class="btn primary" style="margin-top:10px" onclick="let p=document.getElementById('pin1').value;if(!/^\\d{4,6}$/.test(p)){toast('Use 4–6 digits');return}db.pin=p;save();closeModal()">Enable PIN lock</button> <button class="btn" onclick="closeModal()">Cancel</button>`;render()}
+function saveCustom(kind){let a=kind==="category"?db.categories:db.payments;document.querySelectorAll("#customList input").forEach((el,i)=>a[i]=el.value.trim()||a[i]);a=[...new Set(a)];if(kind==="category")db.categories=a;else db.payments=a;save();modalHTML="";render();toast("Saved")}
+function companiesModal(){modalHTML=`<h2>Companies</h2>${db.companies.map((x,i)=>`<div class="expense" style="margin:8px 0"><span>${esc(x)}</span><button class="btn danger" onclick="deleteCompany(${i})">Delete</button></div>`).join("")||`<div class="empty">No companies added.</div>`}<input id="newCompany" class="field" placeholder="Company name"><button class="btn primary" style="margin-top:10px" onclick="addCompany()">+ Add company</button> <button class="btn" onclick="closeModal()">Close</button>`;render()}
+function addCompany(){let v=document.getElementById("newCompany").value.trim();if(v&&!db.companies.includes(v)){db.companies.push(v);save();companiesModal();toast("Company added")}}
+function deleteCompany(i){db.companies.splice(i,1);save();companiesModal();toast("Company deleted")}
+function closeModal(){modalHTML="";render()}
+function setPin(){modalHTML=`<h2>Set PIN lock</h2><p class="muted">Use 4–6 digits.</p><input id="pin1" class="field" type="password" inputmode="numeric" maxlength="6" placeholder="PIN"><button class="btn primary" style="margin-top:10px;width:100%" onclick="let p=document.getElementById('pin1').value;if(!/^\\d{4,6}$/.test(p)){toast('Use 4–6 digits');return}db.pin=p;save();modalHTML='';render();toast('PIN enabled')">Enable PIN</button><button class="btn" style="margin-top:8px;width:100%" onclick="closeModal()">Cancel</button>`;render()}
 function removePin(){db.pin="";db.locked=false;save();render();toast("PIN removed")}
 function lockHTML(){return `<div style="min-height:100vh;display:grid;place-items:center;padding:25px"><div class="card" style="width:min(420px,100%);text-align:center"><div style="font-size:55px">🔒</div><h2>My Expense Locked</h2><input id="unlock" class="field" type="password" inputmode="numeric" maxlength="6" placeholder="Enter PIN"><button class="btn primary" style="width:100%;margin-top:12px" onclick="if(document.getElementById('unlock').value===db.pin){db.locked=false;save();render()}else toast('Wrong PIN')">Unlock</button></div></div>`}
-document.addEventListener("click",e=>{if(e.target.closest('[onclick="go(\\'settings\\')"]')){e.preventDefault();page="settings";render()}})
-function mainRender(){if(page==="settings")document.getElementById("app").innerHTML=`<div class="wrap"><header><div><h1>My Expense</h1><div class="sub">Settings</div></div><button class="iconbtn" onclick="go('home')">✕</button></header>${settingsPage()}</div>${nav()}${modal()}`;else render()}
-const _go=go;go=(p)=>{page=p;mainRender()};
+function exportCSV(){let rows=[["Date","Type","Category","Amount","Payment","Company","Reimbursement","Note"],...db.expenses.map(e=>[e.date,e.type,e.category,e.amount,e.payment,e.company,e.reimbursement,e.note])];let csv=rows.map(r=>r.map(x=>`"${String(x??"").replaceAll('"','""')}"`).join(",")).join("\\n");download("my-expenses.csv","text/csv;charset=utf-8",csv)}
+function exportJSON(){download("my-expense-backup.json","application/json",JSON.stringify(db,null,2))}
+function download(name,type,data){let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function importJSON(ev){let f=ev.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!Array.isArray(x.expenses))throw 0;db={...db,...x};db.budgets=db.budgets||{};db.categories=db.categories?.length?db.categories:[...defaults.categories];db.payments=db.payments?.length?db.payments:[...defaults.payments];db.companies=db.companies||[];save();render();toast("Backup restored")}catch{toast("Invalid backup")}};r.readAsText(f)}
+function printReport(){let es=monthExpenses();let rows=es.map(e=>`<tr><td>${esc(e.date)}</td><td>${esc(e.category)}</td><td>${esc(e.type)}</td><td>${money(e.amount)}</td><td>${esc(e.company||"")}</td><td>${esc(statusLabel(e.reimbursement||""))}</td></tr>`).join("");let w=window.open("","_blank");if(!w){toast("Allow pop-ups to print");return}w.document.write(`<html><head><title>My Expense - ${monthName(selectedMonth)}</title><style>body{font-family:Arial;padding:25px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8px;text-align:left}</style></head><body><h1>My Expense</h1><h2>${monthName(selectedMonth)}</h2><p>Total: <b>${money(total(es))}</b></p><table><tr><th>Date</th><th>Category</th><th>Type</th><th>Amount</th><th>Company</th><th>Status</th></tr>${rows}</table><script>window.onload=()=>window.print()<\/script></body></html>`);w.document.close()}
 mainRender();
-if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+function mainRender(){render()}
+if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").then(r=>r.update()).catch(()=>{})}
 </script>
 </body></html>
