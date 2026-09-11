@@ -29,18 +29,8 @@ jobs:
 
           mkdir -p android/app/src/main/java/com/soujil/myexpense
           mkdir -p android/app/src/main/assets
-          mkdir -p android/app/src/main/res/drawable-nodpi
-          mkdir -p android/app/src/main/res/values
 
           cp index.html android/app/src/main/assets/index.html
-
-          # Use the project's own My Expense icon for the APK launcher icon.
-          if [ -f icon-512.png ]; then
-            cp icon-512.png android/app/src/main/res/drawable-nodpi/my_expense_icon.png
-          else
-            echo "icon-512.png not found"
-            exit 1
-          fi
 
           cat > android/gradle.properties <<'EOF2'
           org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
@@ -86,38 +76,20 @@ jobs:
               defaultConfig {
                   applicationId 'com.soujil.myexpense'
                   minSdk 23
-                  targetSdk 34
-                  versionCode 4
-                  versionName '1.4'
+                  targetSdk 35
+                  versionCode 1
+                  versionName '1.0'
               }
           }
-          EOF2
-
-          cat > android/app/src/main/res/values/styles.xml <<'EOF2'
-          <resources>
-              <style name="AppTheme" parent="@android:style/Theme.Material.Light.NoActionBar">
-                  <item name="android:fontFamily">sans</item>
-                  <item name="android:windowActionModeOverlay">true</item>
-                  <item name="android:windowNoTitle">true</item>
-                  <item name="android:colorAccent">#2EAD55</item>
-                  <item name="android:statusBarColor">#F7F9F8</item>
-                  <item name="android:navigationBarColor">#F7F9F8</item>
-                  <item name="android:windowLightStatusBar">true</item>
-                  <item name="android:windowLightNavigationBar">true</item>
-              </style>
-          </resources>
           EOF2
 
           cat > android/app/src/main/AndroidManifest.xml <<'EOF2'
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
               <application
-                  android:theme="@style/AppTheme"
+                  android:theme="@android:style/Theme.Material.Light.NoActionBar"
                   android:label="My Expense"
-                  android:icon="@drawable/my_expense_icon"
-                  android:roundIcon="@drawable/my_expense_icon"
                   android:allowBackup="true"
-                  android:supportsRtl="true"
-                  android:usesCleartextTraffic="false">
+                  android:supportsRtl="true">
 
                   <activity
                       android:name=".MainActivity"
@@ -137,8 +109,6 @@ jobs:
 
           import android.app.Activity;
           import android.os.Bundle;
-          import android.view.View;
-          import android.view.Window;
           import android.webkit.WebSettings;
           import android.webkit.WebView;
           import android.webkit.WebViewClient;
@@ -150,39 +120,16 @@ jobs:
               protected void onCreate(Bundle savedInstanceState) {
                   super.onCreate(savedInstanceState);
 
-                  Window window = getWindow();
-
-                  // Keep Android's system status/navigation bars visible.
-                  window.getDecorView().setSystemUiVisibility(
-                      View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR |
-                      View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-                  );
-                  window.setStatusBarColor(0xFFF7F9F8);
-                  window.setNavigationBarColor(0xFFF7F9F8);
-
                   webView = new WebView(this);
                   WebSettings settings = webView.getSettings();
                   settings.setJavaScriptEnabled(true);
                   settings.setDomStorageEnabled(true);
                   settings.setAllowFileAccess(true);
                   settings.setAllowContentAccess(true);
-                  settings.setBuiltInZoomControls(false);
-                  settings.setDisplayZoomControls(false);
 
                   webView.setWebViewClient(new WebViewClient());
                   setContentView(webView);
                   webView.loadUrl("file:///android_asset/index.html");
-              }
-
-              @Override
-              public void onWindowFocusChanged(boolean hasFocus) {
-                  super.onWindowFocusChanged(hasFocus);
-                  if (hasFocus) {
-                      getWindow().getDecorView().setSystemUiVisibility(
-                          View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR |
-                          View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-                      );
-                  }
               }
 
               @Override
@@ -203,6 +150,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: My-Expense-Android-v4
+          name: My-Expense-Android
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
