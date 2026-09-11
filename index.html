@@ -28,17 +28,6 @@ label{display:block;font-weight:750;margin:13px 0 7px}.field{width:100%;padding:
 <body>
 <div id="app"><div style="min-height:100vh;display:grid;place-items:center;padding:24px;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"><div style="text-align:center"><div style="font-size:48px">💰</div><h2>My Expense</h2><div style="color:#718078">Loading…</div></div></div></div><div id="toast" class="toast"></div>
 <script>
-// Safe recovery: remove old service workers/caches only. Expense data in localStorage is untouched.
-(function(){
-  try{
-    if('serviceWorker' in navigator){
-      navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())).catch(()=>{});
-    }
-    if(window.caches){caches.keys().then(ks=>ks.forEach(k=>caches.delete(k))).catch(()=>{});}
-  }catch(e){}
-})();
-</script>
-<script>
 const KEY="myExpenseFinalV1", OLD_KEY="myExpenseFullV1";
 const defaults={categories:["Food","Travel","Courier","Shopping","Bills","Office","Fuel","Other"],payments:["Cash","UPI","Card","Bank Transfer","Other"],companies:[]};
 let saved=null,legacy=null,db=null;
@@ -52,8 +41,8 @@ db=db||((legacy&&Array.isArray(legacy.expenses))?{
 }:{expenses:[],budgets:{},categories:[...defaults.categories],payments:[...defaults.payments],companies:[],pin:"",locked:false});
 if(!saved&&legacy){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){}}
 if(db.pin){db.locked=true;try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){}}
-db.categories=db.categories?.length?db.categories:[...defaults.categories];
-db.payments=db.payments?.length?db.payments:[...defaults.payments];
+db.categories=(db.categories && db.categories.length)?db.categories:[...defaults.categories];
+db.payments=(db.payments && db.payments.length)?db.payments:[...defaults.payments];
 db.companies=db.companies||[];db.budgets=db.budgets||{};
 let page="home",editId=null,filterType="all",filterCat="All",searchText="",modalHTML="";
 
@@ -105,10 +94,10 @@ function companyFields(e){return `<label>Company <button type="button" class="bt
 function setType(t){window._addType=t;render()}
 window._addType=null;
 function submitExpense(){
-let type=window._addType||document.querySelector(".tab.active")?.textContent.includes("Company")?"company":"personal";
+let type=window._addType||((document.querySelector(".tab.active")||{}).textContent||"").includes("Company")?"company":"personal";
 if(window._addType)type=window._addType;
-let f=id=>document.getElementById(id)?.value||"",file=document.getElementById("receipt")?.files?.[0];
-const finish=receipt=>{let old=db.expenses.find(x=>x.id===editId);let e={id:editId||Date.now().toString(),type,amount:Number(f("amount")),category:f("category"),payment:f("payment"),date:f("date"),note:f("note"),company:type==="company"?f("company"):"",reimbursement:type==="company"?f("reimbursement"):"",receipt:receipt||(old?.receipt||"")};if(!e.amount){toast("Enter amount");return}if(type==="company"&&!e.company){toast("Select company");return}let i=db.expenses.findIndex(x=>x.id===e.id);if(i>=0)db.expenses[i]=e;else db.expenses.push(e);save();editId=null;window._addType=null;selectedMonth=dateKey(e.date);toast(i>=0?"Expense updated":"Expense saved");go("expenses")};
+let f=id=>((document.getElementById(id)||{}).value||""),file=((document.getElementById("receipt")||{}).files||[])[0];
+const finish=receipt=>{let old=db.expenses.find(x=>x.id===editId);let e={id:editId||Date.now().toString(),type,amount:Number(f("amount")),category:f("category"),payment:f("payment"),date:f("date"),note:f("note"),company:type==="company"?f("company"):"",reimbursement:type==="company"?f("reimbursement"):"",receipt:receipt||(old&&old.receipt||"")};if(!e.amount){toast("Enter amount");return}if(type==="company"&&!e.company){toast("Select company");return}let i=db.expenses.findIndex(x=>x.id===e.id);if(i>=0)db.expenses[i]=e;else db.expenses.push(e);save();editId=null;window._addType=null;selectedMonth=dateKey(e.date);toast(i>=0?"Expense updated":"Expense saved");go("expenses")};
 if(file){let r=new FileReader();r.onload=()=>finish(r.result);r.readAsDataURL(file)}else finish("");
 }
 function clearReceipt(){let e=db.expenses.find(x=>x.id===editId);if(e){e.receipt="";save()}render()}
@@ -122,9 +111,9 @@ return `${top("Expenses",`${db.expenses.length} total transactions`)}<div class=
 <div class="tabs">${[["all","All"],["personal","Personal"],["company","Company"]].map(x=>`<button class="tab ${filterType===x[0]?'active':''}" onclick="setFilterType('${x[0]}')">${x[1]}</button>`).join("")}</div>
 <div class="tabs">${cats.map(x=>`<button class="tab ${filterCat===x?'active':''}" onclick="setFilterCat('${esc(x)}')">${esc(x)}</button>`).join("")}</div>${list(filtered)}</div>`;
 }
-function filterNow(){searchText=document.getElementById("search")?.value?.toLowerCase()||"";render()}
+function filterNow(){searchText=String(((document.getElementById("search")||{}).value)||"").toLowerCase()||"";render()}
 function setFilterType(x){filterType=x;render()} function setFilterCat(x){filterCat=x;render()}
-function edit(id){editId=id;window._addType=db.expenses.find(e=>e.id===id)?.type||"personal";page="add";render()}
+function edit(id){editId=id;window._addType=((db.expenses.find(e=>e.id===id)||{}).type||"personal");page="add";render()}
 function delExpense(id){if(confirm("Delete this expense?")){db.expenses=db.expenses.filter(e=>e.id!==id);save();render();toast("Deleted")}}
 
 function reports(){
@@ -159,10 +148,10 @@ function setPin(){modalHTML=`<h2>Set PIN lock</h2><p class="muted">Use 4–6 dig
 function removePin(){db.pin="";db.locked=false;save();render();toast("PIN removed")}
 function lockNow(){if(!db.pin){toast("Set a PIN first");return}db.locked=true;save();render()}
 function lockHTML(){return `<div style="min-height:100vh;display:grid;place-items:center;padding:25px"><div class="card" style="width:min(420px,100%);text-align:center"><div style="font-size:55px">🔒</div><h2>My Expense Locked</h2><input id="unlock" class="field" type="password" inputmode="numeric" maxlength="6" placeholder="Enter PIN"><button class="btn primary" style="width:100%;margin-top:12px" onclick="if(document.getElementById('unlock').value===db.pin){db.locked=false;save();render()}else toast('Wrong PIN')">Unlock</button></div></div>`}
-function exportCSV(){let rows=[["Date","Type","Category","Amount","Payment","Company","Reimbursement","Note"],...db.expenses.map(e=>[e.date,e.type,e.category,e.amount,e.payment,e.company,e.reimbursement,e.note])];let csv=rows.map(r=>r.map(x=>`"${String(x??"").replaceAll('"','""')}"`).join(",")).join("\\n");download("my-expenses.csv","text/csv;charset=utf-8",csv)}
+function exportCSV(){let rows=[["Date","Type","Category","Amount","Payment","Company","Reimbursement","Note"],...db.expenses.map(e=>[e.date,e.type,e.category,e.amount,e.payment,e.company,e.reimbursement,e.note])];let csv=rows.map(r=>r.map(x=>`"${String(x==null?"":x).replaceAll('"','""')}"`).join(",")).join("\\n");download("my-expenses.csv","text/csv;charset=utf-8",csv)}
 function exportJSON(){download("my-expense-backup.json","application/json",JSON.stringify(db,null,2))}
 function download(name,type,data){let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
-function importJSON(ev){let f=ev.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!Array.isArray(x.expenses))throw 0;db={...db,...x};db.budgets=db.budgets||{};db.categories=db.categories?.length?db.categories:[...defaults.categories];db.payments=db.payments?.length?db.payments:[...defaults.payments];db.companies=db.companies||[];save();render();toast("Backup restored")}catch{toast("Invalid backup")}};r.readAsText(f)}
+function importJSON(ev){let f=ev.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!Array.isArray(x.expenses))throw 0;db={...db,...x};db.budgets=db.budgets||{};db.categories=(db.categories && db.categories.length)?db.categories:[...defaults.categories];db.payments=(db.payments && db.payments.length)?db.payments:[...defaults.payments];db.companies=db.companies||[];save();render();toast("Backup restored")}catch{toast("Invalid backup")}};r.readAsText(f)}
 function printReport(){let es=monthExpenses();let rows=es.map(e=>`<tr><td>${esc(e.date)}</td><td>${esc(e.category)}</td><td>${esc(e.type)}</td><td>${money(e.amount)}</td><td>${esc(e.company||"")}</td><td>${esc(statusLabel(e.reimbursement||""))}</td></tr>`).join("");let w=window.open("","_blank");if(!w){toast("Allow pop-ups to print");return}w.document.write(`<html><head><title>My Expense - ${monthName(selectedMonth)}</title><style>body{font-family:Arial;padding:25px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8px;text-align:left}</style></head><body><h1>My Expense</h1><h2>${monthName(selectedMonth)}</h2><p>Total: <b>${money(total(es))}</b></p><table><tr><th>Date</th><th>Category</th><th>Type</th><th>Amount</th><th>Company</th><th>Status</th></tr>${rows}</table><script>window.onload=()=>window.print()<\/script></body></html>`);w.document.close()}
 function showFatal(e){
   const msg=e&&e.message?e.message:String(e||"Unknown error");
