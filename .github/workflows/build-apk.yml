@@ -26,12 +26,14 @@ jobs:
         shell: bash
         run: |
           set -e
+
           mkdir -p android/app/src/main/java/com/soujil/myexpense
           mkdir -p android/app/src/main/assets
           mkdir -p android/app/src/main/res/drawable
           mkdir -p android/app/src/main/res/values
 
           cp index.html android/app/src/main/assets/index.html
+
           if [ -f icon-192.png ]; then
             cp icon-192.png android/app/src/main/res/drawable/icon.png
           fi
@@ -44,6 +46,7 @@ jobs:
                   gradlePluginPortal()
               }
           }
+
           dependencyResolutionManagement {
               repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
               repositories {
@@ -51,13 +54,14 @@ jobs:
                   mavenCentral()
               }
           }
+
           rootProject.name = "MyExpenseAndroid"
           include(":app")
           EOF
 
           cat > android/build.gradle <<'EOF'
           plugins {
-              id 'com.android.application' version '8.7.3' apply false
+              id 'com.android.application' version '8.6.1' apply false
           }
           EOF
 
@@ -168,25 +172,31 @@ jobs:
               @Override
               protected void onResume() {
                   super.onResume();
+
                   if (resumedOnce) {
                       new Handler().postDelayed(() ->
                           webView.evaluateJavascript(
                               "if(window.androidAppResumed){window.androidAppResumed();}", null),
                           250);
                   }
+
                   resumedOnce = true;
               }
 
               @Override
               public void onBackPressed() {
-                  if (webView.canGoBack()) webView.goBack();
-                  else super.onBackPressed();
+                  if (webView.canGoBack()) {
+                      webView.goBack();
+                  } else {
+                      super.onBackPressed();
+                  }
               }
 
               private class AndroidBridge {
                   @JavascriptInterface
                   public void authenticate() {
-                      Executor executor = ContextCompat.getMainExecutor(MainActivity.this);
+                      Executor executor =
+                          ContextCompat.getMainExecutor(MainActivity.this);
 
                       biometricPrompt = new BiometricPrompt(
                           MainActivity.this,
