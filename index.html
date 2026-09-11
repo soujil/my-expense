@@ -80,7 +80,7 @@ if(!db){let old=null;try{old=JSON.parse(localStorage.getItem(OLD_KEY)||"null")}c
  db=old&&Array.isArray(old.expenses)?{...old,budget:old.budget||0}: {expenses:[],budget:0,categories:[...defaults.categories],payments:[...defaults.payments],companies:[],pin:"",locked:false};
  try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){}
 }
-db.categories=db.categories?.length?db.categories:defaults.categories;db.payments=db.payments?.length?db.payments:defaults.payments;db.companies=db.companies||[];db.faceCredentialId=db.faceCredentialId||"";
+db.categories=db.categories?.length?db.categories:defaults.categories;db.payments=db.payments?.length?db.payments:defaults.payments;db.companies=db.companies||[];
 let page="home", editId=null;
 const save=()=>localStorage.setItem(KEY,JSON.stringify(db));
 const money=n=>"₹"+Number(n||0).toLocaleString("en-IN",{maximumFractionDigits:2});
@@ -96,7 +96,7 @@ function monthShift(n){let d=new Date(selectedMonth+"-01T00:00:00");d.setMonth(d
 function monthNav(){return `<div class="monthNav"><button class="btn small" onclick="monthShift(-1)">‹</button><b>${monthName(selectedMonth)}</b><button class="btn small" onclick="monthShift(1)">›</button></div>`}
 function total(arr){return arr.reduce((a,e)=>a+Number(e.amount||0),0)}
 function render(){
- if(db.locked&&(db.pin||db.faceCredentialId)){document.getElementById("app").innerHTML=lockHTML();return}
+ if(db.locked&&db.pin){document.getElementById("app").innerHTML=lockHTML();return}
  document.getElementById("app").innerHTML=`
  <div class="wrap">
   <header><div><h1>My Expense</h1><div class="sub">${monthName(currentMonth())}</div></div><button class="iconbtn" onclick="go('settings')">⚙️</button></header>
@@ -188,34 +188,17 @@ function saveCustom(kind){let a=kind==="category"?db.categories:db.payments;docu
 function closeModal(){window._modal=null;render()}
 function settingsPage(){
  return `<h2>Settings</h2><div class="card"><h3>Customize dropdowns</h3><button class="btn" onclick="customize('category')">Categories</button> <button class="btn" onclick="customize('payment')">Payment methods</button><button class="btn" style="margin-top:10px" onclick="companiesModal()">Companies</button></div>
- <div class="card"><h3>Security</h3>${db.pin?`<button class="btn danger" onclick="removePin()">Remove PIN</button> <button class="btn primary" onclick="lockNow()">🔒 Lock Now</button>`:`<button class="btn" onclick="setPin()">Set PIN lock</button>`}<br><button class="btn" style="margin-top:10px" onclick="enableFaceID()">${db.faceCredentialId?"✓ Face ID enabled — Re-register":"🔐 Enable Face ID"}</button>${db.faceCredentialId?` <button class="btn danger" onclick="disableFaceID()">Remove Face ID</button>`:""}<div class="muted" style="margin-top:10px">Uses your iPhone's built-in biometric security. PIN remains available as backup.</div></div>
+ <div class="card"><h3>Security</h3>${db.pin?`<button class="btn danger" onclick="removePin()">Remove PIN</button>`:`<button class="btn" onclick="setPin()">Set PIN lock</button>`}</div>
  <div class="card"><h3>Data</h3><button class="btn" onclick="exportJSON()">Export backup</button><label class="btn" style="display:inline-block">Import backup<input type="file" accept=".json" style="display:none" onchange="importJSON(event)"></label></div>
  <div class="card"><h3>About</h3><div class="muted">My Expense — personal + company reimbursement tracker. Data stays on this device/browser unless you export it.</div></div>`;
 }
 function companiesModal(){window._modal=`<h2>Companies</h2>${db.companies.map((x,i)=>`<div class="expense" style="margin:8px 0"><span>${esc(x)}</span><button class="btn danger" onclick="db.companies.splice(${i},1);save();companiesModal()">Delete</button></div>`).join("")}<input id="newCompany" class="field" placeholder="Company name"><button class="btn primary" style="margin-top:10px" onclick="let v=document.getElementById('newCompany').value.trim();if(v){db.companies.push(v);save();companiesModal()}">+ Add company</button> <button class="btn" onclick="closeModal()">Close</button>`;render()}
-function savePin(){const el=document.getElementById("pin1");const p=(el&&el.value?el.value:"").replace(/\D/g,"").slice(0,6);if(p.length<4||p.length>6){toast("Enter 4–6 digits");return}db.pin=p;db.locked=false;save();window._modal=null;render();toast("PIN lock enabled")}
-function setPin(){window._modal=`<h2>Set PIN</h2><input id="pin1" class="field" type="tel" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="Enter 4–6 digit PIN" oninput="this.value=this.value.replace(/\D/g,"").slice(0,6)"><button type="button" class="btn primary" style="margin-top:10px" onclick="savePin()">Enable PIN lock</button> <button type="button" class="btn" onclick="closeModal()">Cancel</button>`;render();setTimeout(()=>document.getElementById("pin1")?.focus(),80)}
-function lockNow(){if(!db.pin&&!db.faceCredentialId){toast('Set PIN or enable Face ID first');return}db.locked=true;save();render()}
-function b64u(buf){let bytes=new Uint8Array(buf),s="";for(let i=0;i<bytes.length;i++)s+=String.fromCharCode(bytes[i]);return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"")}
-function b64uBytes(s){s=s.replace(/-/g,"+").replace(/_/g,"/");while(s.length%4)s+="=";let bin=atob(s),a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return a}
-async function enableFaceID(){
- if(!window.PublicKeyCredential||!navigator.credentials){toast('Face ID is not supported here');return}
- try{
-  if(PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable && !(await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable())){toast('iPhone biometric security is not available');return}
-  const cred=await navigator.credentials.create({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),rp:{name:'My Expense',id:location.hostname},user:{id:crypto.getRandomValues(new Uint8Array(16)),name:'my-expense-user',displayName:'My Expense'},pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],timeout:60000,authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required',residentKey:'preferred'},attestation:'none'}});
-  if(!cred)throw new Error('No credential');db.faceCredentialId=b64u(cred.rawId);save();closeModal();render();toast('Face ID enabled');
- }catch(e){console.error(e);toast('Face ID setup cancelled or unavailable')}
-}
-async function unlockFace(){if(!db.faceCredentialId){toast('Face ID is not enabled');return}try{const a=await navigator.credentials.get({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),rpId:location.hostname,allowCredentials:[{type:'public-key',id:b64uBytes(db.faceCredentialId)}],userVerification:'required'}});if(a){db.locked=false;save();render()}}catch(e){console.error(e);toast('Face ID failed — use PIN')}}
-function disableFaceID(){db.faceCredentialId="";save();render();toast('Face ID removed')}
-function removePin(){db.pin="";db.locked=false;save();render();toast('PIN removed')}
-function lockHTML(){return `<div style="min-height:100vh;display:grid;place-items:center;padding:25px"><div class="card" style="width:min(420px,100%);text-align:center"><div style="font-size:55px">🔒</div><h2>My Expense Locked</h2>${db.faceCredentialId?`<button class="btn primary" style="width:100%;margin-top:8px" onclick="unlockFace()">🔐 Unlock with Face ID</button>`:``}<div class="muted" style="margin-top:10px">${db.pin?"Enter your PIN to unlock":"Use Face ID to unlock"}</div>${db.pin?`<input id="unlock" class="field" type="password" inputmode="numeric" maxlength="6" autocomplete="current-password" placeholder="Enter PIN" style="margin-top:12px"><button class="btn" style="width:100%;margin-top:10px" onclick="const v=document.getElementById('unlock').value;if(v===db.pin){db.locked=false;save();render()}else{document.getElementById('unlock').value='';toast('Wrong PIN')}">Unlock with PIN</button>`:``}</div></div>`}
+function setPin(){window._modal=`<h2>Set PIN</h2><input id="pin1" class="field" type="password" inputmode="numeric" maxlength="6" placeholder="4–6 digit PIN"><button class="btn primary" style="margin-top:10px" onclick="let p=document.getElementById('pin1').value;if(!/^\\d{4,6}$/.test(p)){toast('Use 4–6 digits');return}db.pin=p;save();closeModal()">Enable PIN lock</button> <button class="btn" onclick="closeModal()">Cancel</button>`;render()}
+function removePin(){db.pin="";db.locked=false;save();render();toast("PIN removed")}
+function lockHTML(){return `<div style="min-height:100vh;display:grid;place-items:center;padding:25px"><div class="card" style="width:min(420px,100%);text-align:center"><div style="font-size:55px">🔒</div><h2>My Expense Locked</h2><input id="unlock" class="field" type="password" inputmode="numeric" maxlength="6" placeholder="Enter PIN"><button class="btn primary" style="width:100%;margin-top:12px" onclick="if(document.getElementById('unlock').value===db.pin){db.locked=false;save();render()}else toast('Wrong PIN')">Unlock</button></div></div>`}
 document.addEventListener("click",e=>{if(e.target.closest("[onclick=\"go('settings')\"]")){e.preventDefault();page="settings";mainRender()}})
 function mainRender(){if(page==="settings")document.getElementById("app").innerHTML=`<div class="wrap"><header><div><h1>My Expense</h1><div class="sub">Settings</div></div><button class="iconbtn" onclick="go('home')">✕</button></header>${settingsPage()}</div>${nav()}${modal()}`;else render()}
 const _go=go;go=(p)=>{page=p;mainRender()};
-let hiddenAt=0;
-document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden"){hiddenAt=Date.now()}else if(hiddenAt&&Date.now()-hiddenAt>500){if(db.pin||db.faceCredentialId){db.locked=true;save();render()}}});
-window.addEventListener("pagehide",()=>{if(db.pin||db.faceCredentialId){db.locked=true;save()}});
 mainRender();
 
 </script>
