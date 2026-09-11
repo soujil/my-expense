@@ -41,13 +41,14 @@ if(!saved&&legacy)localStorage.setItem(KEY,JSON.stringify(db));
 db.categories=db.categories?.length?db.categories:[...defaults.categories];
 db.payments=db.payments?.length?db.payments:[...defaults.payments];
 db.companies=db.companies||[];db.budgets=db.budgets||{};
-let page="home",editId=null,selectedMonth=currentMonth(),filterType="all",filterCat="All",searchText="",modalHTML="";
+let page="home",editId=null,filterType="all",filterCat="All",searchText="",modalHTML="";
 
 const save=()=>localStorage.setItem(KEY,JSON.stringify(db));
 const money=n=>"₹"+Number(n||0).toLocaleString("en-IN",{maximumFractionDigits:2});
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
 const dateKey=d=>String(d).slice(0,7);
 const currentMonth=()=>{let d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")};
+let selectedMonth=currentMonth();
 const monthName=k=>new Date(k+"-01T00:00:00").toLocaleDateString("en-IN",{month:"long",year:"numeric"});
 const total=a=>a.reduce((s,e)=>s+Number(e.amount||0),0);
 const monthExpenses=(k=selectedMonth)=>db.expenses.filter(e=>dateKey(e.date)===k);
