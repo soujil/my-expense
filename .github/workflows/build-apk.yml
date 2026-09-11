@@ -31,12 +31,11 @@ jobs:
           cp index.html android/app/src/main/assets/index.html
           cp icon-512.png android/app/src/main/res/drawable/app_icon.png
 
-          cat > android/gradle.properties <<'EOF2'
+          cat > android/gradle.properties <<'PROPS'
           org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
-          android.useAndroidX=false
-          EOF2
+          PROPS
 
-          cat > android/settings.gradle <<'EOF2'
+          cat > android/settings.gradle <<'GRADLE'
           pluginManagement {
               repositories {
                   google()
@@ -53,15 +52,15 @@ jobs:
           }
           rootProject.name = "MyExpenseAndroid"
           include(":app")
-          EOF2
+          GRADLE
 
-          cat > android/build.gradle <<'EOF2'
+          cat > android/build.gradle <<'GRADLE'
           plugins {
               id 'com.android.application' version '8.7.3' apply false
           }
-          EOF2
+          GRADLE
 
-          cat > android/app/build.gradle <<'EOF2'
+          cat > android/app/build.gradle <<'GRADLE'
           plugins {
               id 'com.android.application'
           }
@@ -72,13 +71,13 @@ jobs:
                   applicationId 'com.soujil.myexpense'
                   minSdk 23
                   targetSdk 35
-                  versionCode 6
-                  versionName '1.0.6'
+                  versionCode 7
+                  versionName '1.0.7'
               }
           }
-          EOF2
+          GRADLE
 
-          cat > android/app/src/main/AndroidManifest.xml <<'EOF2'
+          cat > android/app/src/main/AndroidManifest.xml <<'MANIFEST'
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
               <application
                   android:theme="@android:style/Theme.Material.Light.NoActionBar"
@@ -98,31 +97,43 @@ jobs:
                   </activity>
               </application>
           </manifest>
-          EOF2
+          MANIFEST
 
-          cat > android/app/src/main/java/com/soujil/myexpense/MainActivity.java <<'EOF2'
+          cat > android/app/src/main/java/com/soujil/myexpense/MainActivity.java <<'JAVA'
           package com.soujil.myexpense;
 
           import android.app.Activity;
           import android.os.Bundle;
+          import android.graphics.Color;
+          import android.view.View;
           import android.view.Window;
-          import android.view.WindowManager;
           import android.webkit.WebSettings;
           import android.webkit.WebView;
           import android.webkit.WebViewClient;
-          import android.graphics.Color;
+          import java.io.InputStream;
+          import java.io.ByteArrayOutputStream;
+          import java.nio.charset.StandardCharsets;
 
           public class MainActivity extends Activity {
               private WebView webView;
+
+              private String readAsset(String name) throws Exception {
+                  InputStream in = getAssets().open(name);
+                  ByteArrayOutputStream out = new ByteArrayOutputStream();
+                  byte[] buf = new byte[8192];
+                  int n;
+                  while ((n = in.read(buf)) != -1) out.write(buf, 0, n);
+                  in.close();
+                  return new String(out.toByteArray(), StandardCharsets.UTF_8);
+              }
 
               @Override
               protected void onCreate(Bundle savedInstanceState) {
                   super.onCreate(savedInstanceState);
                   Window w = getWindow();
-                  w.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
                   w.setStatusBarColor(Color.rgb(243,247,244));
                   w.setNavigationBarColor(Color.rgb(243,247,244));
-                  w.getDecorView().setSystemUiVisibility(0);
+                  w.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
 
                   webView = new WebView(this);
                   WebSettings s = webView.getSettings();
@@ -133,9 +144,19 @@ jobs:
                   s.setAllowContentAccess(true);
                   s.setBuiltInZoomControls(false);
                   s.setDisplayZoomControls(false);
+                  s.setLoadWithOverviewMode(false);
+                  s.setUseWideViewPort(false);
+                  webView.setBackgroundColor(Color.rgb(243,247,244));
                   webView.setWebViewClient(new WebViewClient());
                   setContentView(webView);
-                  webView.loadUrl("file:///android_asset/index.html");
+
+                  try {
+                      String html = readAsset("index.html");
+                      // Use a real local origin so WebView localStorage works reliably.
+                      webView.loadDataWithBaseURL("https://my-expense.local/", html, "text/html", "UTF-8", null);
+                  } catch (Exception e) {
+                      webView.loadData("<html><body style='font-family:Arial;padding:30px'><h2>My Expense</h2><p>Unable to start app.</p><pre>" + e.getMessage() + "</pre></body></html>", "text/html", "UTF-8", null);
+                  }
               }
 
               @Override
@@ -144,7 +165,7 @@ jobs:
                   else super.onBackPressed();
               }
           }
-          EOF2
+          JAVA
 
       - name: Build APK
         working-directory: android
