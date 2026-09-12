@@ -6,37 +6,40 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set up Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
         with:
-          gradle-version: '8.10.2'
+          gradle-version: '8.9'
 
       - name: Create Android project
         shell: bash
         run: |
           set -e
-          rm -rf android
+
           mkdir -p android/app/src/main/java/com/soujil/myexpense
           mkdir -p android/app/src/main/assets
-          mkdir -p android/app/src/main/res/drawable
+          mkdir -p android/app/src/main/res/values
+
           cp index.html android/app/src/main/assets/index.html
-          cp icon-512.png android/app/src/main/res/drawable/app_icon.png
 
-          cat > android/gradle.properties <<'PROPS'
+          cat > android/gradle.properties <<'EOF'
+          android.useAndroidX=true
+          android.enableJetifier=true
           org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
-          PROPS
+          EOF
 
-          cat > android/settings.gradle <<'GRADLE'
+          cat > android/settings.gradle <<'EOF'
           pluginManagement {
               repositories {
                   google()
@@ -44,6 +47,7 @@ jobs:
                   gradlePluginPortal()
               }
           }
+
           dependencyResolutionManagement {
               repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
               repositories {
@@ -51,122 +55,185 @@ jobs:
                   mavenCentral()
               }
           }
+
           rootProject.name = "MyExpenseAndroid"
           include(":app")
-          GRADLE
+          EOF
 
-          cat > android/build.gradle <<'GRADLE'
+          cat > android/build.gradle <<'EOF'
           plugins {
               id 'com.android.application' version '8.7.3' apply false
           }
-          GRADLE
+          EOF
 
-          cat > android/app/build.gradle <<'GRADLE'
+          cat > android/app/build.gradle <<'EOF'
           plugins {
               id 'com.android.application'
           }
+
           android {
               namespace 'com.soujil.myexpense'
               compileSdk 35
+
               defaultConfig {
                   applicationId 'com.soujil.myexpense'
                   minSdk 23
                   targetSdk 35
-                  versionCode 7
-                  versionName '1.0.7'
+                  versionCode 1
+                  versionName '1.0'
+              }
+
+              buildTypes {
+                  release {
+                      minifyEnabled false
+                  }
               }
           }
-          GRADLE
 
-          cat > android/app/src/main/AndroidManifest.xml <<'MANIFEST'
+          dependencies {
+              implementation 'androidx.appcompat:appcompat:1.7.0'
+              implementation 'androidx.biometric:biometric:1.1.0'
+          }
+          EOF
+
+          cat > android/app/src/main/res/values/styles.xml <<'EOF'
+          <resources>
+              <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+                  <item name="android:fontFamily">sans</item>
+                  <item name="android:colorAccent">#4CAF50</item>
+                  <item name="android:navigationBarColor">#FFFFFF</item>
+                  <item name="android:statusBarColor">#F5F8F5</item>
+                  <item name="android:windowLightStatusBar">true</item>
+              </style>
+          </resources>
+          EOF
+
+          cat > android/app/src/main/AndroidManifest.xml <<'EOF'
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+
               <application
-                  android:theme="@android:style/Theme.Material.Light.NoActionBar"
+                  android:theme="@style/AppTheme"
                   android:label="My Expense"
-                  android:icon="@drawable/app_icon"
-                  android:roundIcon="@drawable/app_icon"
                   android:allowBackup="true"
-                  android:supportsRtl="true">
+                  android:supportsRtl="true"
+                  android:usesCleartextTraffic="false">
+
                   <activity
                       android:name=".MainActivity"
                       android:screenOrientation="portrait"
                       android:exported="true">
+
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN" />
                           <category android:name="android.intent.category.LAUNCHER" />
                       </intent-filter>
+
                   </activity>
               </application>
           </manifest>
-          MANIFEST
+          EOF
 
-          cat > android/app/src/main/java/com/soujil/myexpense/MainActivity.java <<'JAVA'
+          cat > android/app/src/main/java/com/soujil/myexpense/MainActivity.java <<'EOF'
           package com.soujil.myexpense;
 
-          import android.app.Activity;
           import android.os.Bundle;
-          import android.graphics.Color;
-          import android.view.View;
-          import android.view.Window;
+          import android.webkit.JavascriptInterface;
           import android.webkit.WebSettings;
           import android.webkit.WebView;
           import android.webkit.WebViewClient;
-          import java.io.InputStream;
-          import java.io.ByteArrayOutputStream;
-          import java.nio.charset.StandardCharsets;
 
-          public class MainActivity extends Activity {
+          import androidx.annotation.NonNull;
+          import androidx.biometric.BiometricPrompt;
+          import androidx.core.content.ContextCompat;
+          import androidx.fragment.app.FragmentActivity;
+
+          import java.util.concurrent.Executor;
+
+          public class MainActivity extends FragmentActivity {
               private WebView webView;
-
-              private String readAsset(String name) throws Exception {
-                  InputStream in = getAssets().open(name);
-                  ByteArrayOutputStream out = new ByteArrayOutputStream();
-                  byte[] buf = new byte[8192];
-                  int n;
-                  while ((n = in.read(buf)) != -1) out.write(buf, 0, n);
-                  in.close();
-                  return new String(out.toByteArray(), StandardCharsets.UTF_8);
-              }
+              private BiometricPrompt biometricPrompt;
 
               @Override
               protected void onCreate(Bundle savedInstanceState) {
                   super.onCreate(savedInstanceState);
-                  Window w = getWindow();
-                  w.setStatusBarColor(Color.rgb(243,247,244));
-                  w.setNavigationBarColor(Color.rgb(243,247,244));
-                  w.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
 
                   webView = new WebView(this);
+
                   WebSettings s = webView.getSettings();
                   s.setJavaScriptEnabled(true);
                   s.setDomStorageEnabled(true);
-                  s.setDatabaseEnabled(true);
                   s.setAllowFileAccess(true);
                   s.setAllowContentAccess(true);
-                  s.setBuiltInZoomControls(false);
-                  s.setDisplayZoomControls(false);
-                  s.setLoadWithOverviewMode(false);
-                  s.setUseWideViewPort(false);
-                  webView.setBackgroundColor(Color.rgb(243,247,244));
-                  webView.setWebViewClient(new WebViewClient());
-                  setContentView(webView);
 
-                  try {
-                      String html = readAsset("index.html");
-                      // Use a real local origin so WebView localStorage works reliably.
-                      webView.loadDataWithBaseURL("https://my-expense.local/", html, "text/html", "UTF-8", null);
-                  } catch (Exception e) {
-                      webView.loadData("<html><body style='font-family:Arial;padding:30px'><h2>My Expense</h2><p>Unable to start app.</p><pre>" + e.getMessage() + "</pre></body></html>", "text/html", "UTF-8", null);
-                  }
+                  webView.setWebViewClient(new WebViewClient());
+                  webView.addJavascriptInterface(new AndroidBridge(), "AndroidApp");
+
+                  setContentView(webView);
+                  webView.loadUrl("file:///android_asset/index.html");
               }
 
               @Override
               public void onBackPressed() {
-                  if (webView != null && webView.canGoBack()) webView.goBack();
-                  else super.onBackPressed();
+                  if (webView != null && webView.canGoBack()) {
+                      webView.goBack();
+                  } else {
+                      super.onBackPressed();
+                  }
+              }
+
+              private class AndroidBridge {
+                  @JavascriptInterface
+                  public void authenticate() {
+                      Executor executor =
+                          ContextCompat.getMainExecutor(MainActivity.this);
+
+                      biometricPrompt = new BiometricPrompt(
+                          MainActivity.this,
+                          executor,
+                          new BiometricPrompt.AuthenticationCallback() {
+
+                              @Override
+                              public void onAuthenticationSucceeded(
+                                      @NonNull BiometricPrompt.AuthenticationResult result) {
+                                  webView.post(() -> webView.evaluateJavascript(
+                                      "if(window.androidBiometricSuccess){window.androidBiometricSuccess();}",
+                                      null
+                                  ));
+                              }
+
+                              @Override
+                              public void onAuthenticationError(
+                                      int errorCode,
+                                      @NonNull CharSequence errString) {
+                                  webView.post(() -> webView.evaluateJavascript(
+                                      "if(window.androidBiometricFailed){window.androidBiometricFailed();}",
+                                      null
+                                  ));
+                              }
+
+                              @Override
+                              public void onAuthenticationFailed() {
+                                  webView.post(() -> webView.evaluateJavascript(
+                                      "if(window.androidBiometricFailed){window.androidBiometricFailed();}",
+                                      null
+                                  ));
+                              }
+                          }
+                      );
+
+                      BiometricPrompt.PromptInfo info =
+                          new BiometricPrompt.PromptInfo.Builder()
+                              .setTitle("My Expense")
+                              .setSubtitle("Unlock your expenses")
+                              .setNegativeButtonText("Use PIN")
+                              .build();
+
+                      biometricPrompt.authenticate(info);
+                  }
               }
           }
-          JAVA
+          EOF
 
       - name: Build APK
         working-directory: android
