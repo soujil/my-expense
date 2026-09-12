@@ -1,1 +1,179 @@
+name: Build My Expense Android APK
 
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Create Android project
+        shell: bash
+        run: |
+          set -e
+          mkdir -p android/app/src/main/java/com/soujil/myexpense
+          mkdir -p android/app/src/main/assets
+          mkdir -p android/app/src/main/res/drawable
+          cp index.html android/app/src/main/assets/index.html
+          cp icon-512.png android/app/src/main/res/drawable/app_icon.png
+
+          cat > android/gradle.properties <<'PROPS'
+          org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+          PROPS
+
+          cat > android/settings.gradle <<'GRADLE'
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+          rootProject.name = "MyExpenseAndroid"
+          include(":app")
+          GRADLE
+
+          cat > android/build.gradle <<'GRADLE'
+          plugins {
+              id 'com.android.application' version '8.7.3' apply false
+          }
+          GRADLE
+
+          cat > android/app/build.gradle <<'GRADLE'
+          plugins {
+              id 'com.android.application'
+          }
+          android {
+              namespace 'com.soujil.myexpense'
+              compileSdk 35
+              defaultConfig {
+                  applicationId 'com.soujil.myexpense'
+                  minSdk 23
+                  targetSdk 35
+                  versionCode 7
+                  versionName '1.0.7'
+              }
+          }
+          GRADLE
+
+          cat > android/app/src/main/AndroidManifest.xml <<'MANIFEST'
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <application
+                  android:theme="@android:style/Theme.Material.Light.NoActionBar"
+                  android:label="My Expense"
+                  android:icon="@drawable/app_icon"
+                  android:roundIcon="@drawable/app_icon"
+                  android:allowBackup="true"
+                  android:supportsRtl="true">
+                  <activity
+                      android:name=".MainActivity"
+                      android:screenOrientation="portrait"
+                      android:exported="true">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          MANIFEST
+
+          cat > android/app/src/main/java/com/soujil/myexpense/MainActivity.java <<'JAVA'
+          package com.soujil.myexpense;
+
+          import android.app.Activity;
+          import android.os.Bundle;
+          import android.graphics.Color;
+          import android.view.View;
+          import android.view.Window;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import android.webkit.WebViewClient;
+          import java.io.InputStream;
+          import java.io.ByteArrayOutputStream;
+          import java.nio.charset.StandardCharsets;
+
+          public class MainActivity extends Activity {
+              private WebView webView;
+
+              private String readAsset(String name) throws Exception {
+                  InputStream in = getAssets().open(name);
+                  ByteArrayOutputStream out = new ByteArrayOutputStream();
+                  byte[] buf = new byte[8192];
+                  int n;
+                  while ((n = in.read(buf)) != -1) out.write(buf, 0, n);
+                  in.close();
+                  return new String(out.toByteArray(), StandardCharsets.UTF_8);
+              }
+
+              @Override
+              protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+                  Window w = getWindow();
+                  w.setStatusBarColor(Color.rgb(243,247,244));
+                  w.setNavigationBarColor(Color.rgb(243,247,244));
+                  w.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
+
+                  webView = new WebView(this);
+                  WebSettings s = webView.getSettings();
+                  s.setJavaScriptEnabled(true);
+                  s.setDomStorageEnabled(true);
+                  s.setDatabaseEnabled(true);
+                  s.setAllowFileAccess(true);
+                  s.setAllowContentAccess(true);
+                  s.setBuiltInZoomControls(false);
+                  s.setDisplayZoomControls(false);
+                  s.setLoadWithOverviewMode(false);
+                  s.setUseWideViewPort(false);
+                  webView.setBackgroundColor(Color.rgb(243,247,244));
+                  webView.setWebViewClient(new WebViewClient());
+                  setContentView(webView);
+
+                  try {
+                      String html = readAsset("index.html");
+                      // Use a real local origin so WebView localStorage works reliably.
+                      webView.loadDataWithBaseURL("https://my-expense.local/", html, "text/html", "UTF-8", null);
+                  } catch (Exception e) {
+                      webView.loadData("<html><body style='font-family:Arial;padding:30px'><h2>My Expense</h2><p>Unable to start app.</p><pre>" + e.getMessage() + "</pre></body></html>", "text/html", "UTF-8", null);
+                  }
+              }
+
+              @Override
+              public void onBackPressed() {
+                  if (webView != null && webView.canGoBack()) webView.goBack();
+                  else super.onBackPressed();
+              }
+          }
+          JAVA
+
+      - name: Build APK
+        working-directory: android
+        run: gradle assembleDebug --no-daemon --stacktrace
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: My-Expense-Android
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
