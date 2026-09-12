@@ -6,7 +6,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,7 +25,6 @@ jobs:
         shell: bash
         run: |
           set -e
-
           mkdir -p android/app/src/main/java/com/soujil/myexpense
           mkdir -p android/app/src/main/assets
           mkdir -p android/app/src/main/res/values
@@ -34,8 +32,6 @@ jobs:
           cp index.html android/app/src/main/assets/index.html
 
           cat > android/gradle.properties <<'EOF'
-          android.useAndroidX=true
-          android.enableJetifier=true
           org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
           EOF
 
@@ -47,7 +43,6 @@ jobs:
                   gradlePluginPortal()
               }
           }
-
           dependencyResolutionManagement {
               repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
               repositories {
@@ -55,7 +50,6 @@ jobs:
                   mavenCentral()
               }
           }
-
           rootProject.name = "MyExpenseAndroid"
           include(":app")
           EOF
@@ -70,35 +64,27 @@ jobs:
           plugins {
               id 'com.android.application'
           }
-
           android {
               namespace 'com.soujil.myexpense'
               compileSdk 35
-
               defaultConfig {
                   applicationId 'com.soujil.myexpense'
                   minSdk 23
                   targetSdk 35
-                  versionCode 1
-                  versionName '1.0'
+                  versionCode 2
+                  versionName '1.1'
               }
-
               buildTypes {
                   release {
                       minifyEnabled false
                   }
               }
           }
-
-          dependencies {
-              implementation 'androidx.appcompat:appcompat:1.7.0'
-              implementation 'androidx.biometric:biometric:1.1.0'
-          }
           EOF
 
           cat > android/app/src/main/res/values/styles.xml <<'EOF'
           <resources>
-              <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+              <style name="AppTheme" parent="@android:style/Theme.Material.Light.NoActionBar">
                   <item name="android:fontFamily">sans</item>
                   <item name="android:colorAccent">#4CAF50</item>
                   <item name="android:navigationBarColor">#FFFFFF</item>
@@ -110,25 +96,20 @@ jobs:
 
           cat > android/app/src/main/AndroidManifest.xml <<'EOF'
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-              <uses-permission android:name="android.permission.USE_BIOMETRIC" />
-
               <application
                   android:theme="@style/AppTheme"
                   android:label="My Expense"
                   android:allowBackup="true"
                   android:supportsRtl="true"
                   android:usesCleartextTraffic="false">
-
                   <activity
                       android:name=".MainActivity"
                       android:screenOrientation="portrait"
                       android:exported="true">
-
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN" />
                           <category android:name="android.intent.category.LAUNCHER" />
                       </intent-filter>
-
                   </activity>
               </application>
           </manifest>
@@ -137,38 +118,33 @@ jobs:
           cat > android/app/src/main/java/com/soujil/myexpense/MainActivity.java <<'EOF'
           package com.soujil.myexpense;
 
+          import android.app.Activity;
           import android.os.Bundle;
           import android.webkit.JavascriptInterface;
           import android.webkit.WebSettings;
           import android.webkit.WebView;
           import android.webkit.WebViewClient;
 
-          import androidx.annotation.NonNull;
-          import androidx.biometric.BiometricPrompt;
-          import androidx.core.content.ContextCompat;
-          import androidx.fragment.app.FragmentActivity;
-
-          import java.util.concurrent.Executor;
-
-          public class MainActivity extends FragmentActivity {
+          public class MainActivity extends Activity {
               private WebView webView;
-              private BiometricPrompt biometricPrompt;
 
               @Override
               protected void onCreate(Bundle savedInstanceState) {
                   super.onCreate(savedInstanceState);
+                  getWindow().setStatusBarColor(0xFFF5F8F5);
+                  getWindow().setNavigationBarColor(0xFFFFFFFF);
 
                   webView = new WebView(this);
-
                   WebSettings s = webView.getSettings();
                   s.setJavaScriptEnabled(true);
                   s.setDomStorageEnabled(true);
                   s.setAllowFileAccess(true);
                   s.setAllowContentAccess(true);
-
+                  s.setBuiltInZoomControls(false);
+                  s.setDisplayZoomControls(false);
                   webView.setWebViewClient(new WebViewClient());
-                  webView.addJavascriptInterface(new AndroidBridge(), "AndroidApp");
 
+                  webView.addJavascriptInterface(new AndroidBridge(), "AndroidApp");
                   setContentView(webView);
                   webView.loadUrl("file:///android_asset/index.html");
               }
@@ -185,51 +161,10 @@ jobs:
               private class AndroidBridge {
                   @JavascriptInterface
                   public void authenticate() {
-                      Executor executor =
-                          ContextCompat.getMainExecutor(MainActivity.this);
-
-                      biometricPrompt = new BiometricPrompt(
-                          MainActivity.this,
-                          executor,
-                          new BiometricPrompt.AuthenticationCallback() {
-
-                              @Override
-                              public void onAuthenticationSucceeded(
-                                      @NonNull BiometricPrompt.AuthenticationResult result) {
-                                  webView.post(() -> webView.evaluateJavascript(
-                                      "if(window.androidBiometricSuccess){window.androidBiometricSuccess();}",
-                                      null
-                                  ));
-                              }
-
-                              @Override
-                              public void onAuthenticationError(
-                                      int errorCode,
-                                      @NonNull CharSequence errString) {
-                                  webView.post(() -> webView.evaluateJavascript(
-                                      "if(window.androidBiometricFailed){window.androidBiometricFailed();}",
-                                      null
-                                  ));
-                              }
-
-                              @Override
-                              public void onAuthenticationFailed() {
-                                  webView.post(() -> webView.evaluateJavascript(
-                                      "if(window.androidBiometricFailed){window.androidBiometricFailed();}",
-                                      null
-                                  ));
-                              }
-                          }
-                      );
-
-                      BiometricPrompt.PromptInfo info =
-                          new BiometricPrompt.PromptInfo.Builder()
-                              .setTitle("My Expense")
-                              .setSubtitle("Unlock your expenses")
-                              .setNegativeButtonText("Use PIN")
-                              .build();
-
-                      biometricPrompt.authenticate(info);
+                      webView.post(() -> webView.evaluateJavascript(
+                          "if(window.androidBiometricFailed){window.androidBiometricFailed();}",
+                          null
+                      ));
                   }
               }
           }
