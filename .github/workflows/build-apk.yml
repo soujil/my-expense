@@ -1,6 +1,10 @@
-name: Build My Expense Android APK
+name: Build My Expenses Android APK
 
 on:
+  push:
+    branches: ["main"]
+    paths:
+      - ".github/workflows/build-apk.yml"
   workflow_dispatch:
 
 jobs:
@@ -15,32 +19,21 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: "17"
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
         with:
-          gradle-version: '8.10.2'
+          gradle-version: "8.10.2"
 
-      - name: Create Android project
+      - name: Create Android WebView project
         shell: bash
         run: |
           set -e
 
-          mkdir -p android/app/src/main/java/com/soujil/myexpense
-          mkdir -p android/app/src/main/assets
+          mkdir -p android/app/src/main/java/com/soujil/myexpenses
           mkdir -p android/app/src/main/res/drawable
-          mkdir -p android/app/src/main/res/values
-
-          cp index.html android/app/src/main/assets/index.html
-          [ ! -f manifest.json ] || cp manifest.json android/app/src/main/assets/manifest.json
-          [ ! -f sw.js ] || cp sw.js android/app/src/main/assets/sw.js
-
-          if [ -f icon-512.png ]; then
-            cp icon-512.png android/app/src/main/res/drawable/app_icon.png
-          else
-            cp icon-192.png android/app/src/main/res/drawable/app_icon.png
-          fi
+          mkdir -p android/app/src/main/res/mipmap-hdpi
 
           cat > android/settings.gradle <<'GRADLE'
           pluginManagement {
@@ -59,13 +52,13 @@ jobs:
               }
           }
 
-          rootProject.name = 'MyExpenseAndroid'
-          include ':app'
+          rootProject.name = "MyExpensesAndroid"
+          include(":app")
           GRADLE
 
           cat > android/build.gradle <<'GRADLE'
           plugins {
-              id 'com.android.application' version '8.6.1' apply false
+              id "com.android.application" version "8.6.1" apply false
           }
           GRADLE
 
@@ -77,29 +70,34 @@ jobs:
 
           cat > android/app/build.gradle <<'GRADLE'
           plugins {
-              id 'com.android.application'
+              id "com.android.application"
           }
 
           android {
-              namespace 'com.soujil.myexpense'
+              namespace "com.soujil.myexpenses"
               compileSdk 35
 
               defaultConfig {
-                  applicationId 'com.soujil.myexpense'
+                  applicationId "com.soujil.myexpenses"
                   minSdk 23
                   targetSdk 35
                   versionCode 1
-                  versionName '1.0'
+                  versionName "2.0"
               }
           }
           GRADLE
 
+          cat > android/app/src/main/res/values.xml <<'XML'
+          XML
+
+          mkdir -p android/app/src/main/res/values
           cat > android/app/src/main/res/values/styles.xml <<'XML'
           <?xml version="1.0" encoding="utf-8"?>
           <resources>
-              <style name="AppTheme" parent="android:style/Theme.Material.Light.NoActionBar">
+              <style name="AppTheme" parent="@android:style/Theme.Material.Light.NoActionBar">
                   <item name="android:fontFamily">sans</item>
-                  <item name="android:colorAccent">#16a34a</item>
+                  <item name="android:windowActionModeOverlay">true</item>
+                  <item name="android:colorAccent">#172033</item>
                   <item name="android:navigationBarColor">#ffffff</item>
                   <item name="android:statusBarColor">#ffffff</item>
                   <item name="android:windowLightStatusBar">true</item>
@@ -107,18 +105,32 @@ jobs:
           </resources>
           XML
 
+          cat > android/app/src/main/res/drawable/ic_launcher.xml <<'XML'
+          <vector xmlns:android="http://schemas.android.com/apk/res/android"
+              android:width="108dp"
+              android:height="108dp"
+              android:viewportWidth="108"
+              android:viewportHeight="108">
+              <path android:fillColor="#172033" android:pathData="M0,0h108v108h-108z"/>
+              <path android:fillColor="#ffffff" android:pathData="M23,31h62v46h-62zM29,37h50v34h-50z"/>
+              <path android:fillColor="#172033" android:pathData="M37,46h34v5h-34zM37,57h23v5h-23z"/>
+          </vector>
+          XML
+
           cat > android/app/src/main/AndroidManifest.xml <<'XML'
           <?xml version="1.0" encoding="utf-8"?>
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
               <uses-permission android:name="android.permission.INTERNET" />
+              <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
               <application
                   android:allowBackup="true"
-                  android:label="My Expense"
+                  android:label="My Expenses 2.0"
                   android:theme="@style/AppTheme"
-                  android:usesCleartextTraffic="true"
-                  android:icon="@drawable/app_icon"
-                  android:roundIcon="@drawable/app_icon">
+                  android:usesCleartextTraffic="false"
+                  android:icon="@drawable/ic_launcher"
+                  android:roundIcon="@drawable/ic_launcher">
 
                   <activity
                       android:name=".MainActivity"
@@ -133,95 +145,56 @@ jobs:
           </manifest>
           XML
 
-          cat > android/app/src/main/java/com/soujil/myexpense/MainActivity.java <<'JAVA'
-          package com.soujil.myexpense;
+          cat > android/app/src/main/java/com/soujil/myexpenses/MainActivity.java <<'JAVA'
+          package com.soujil.myexpenses;
 
+          import android.Manifest;
           import android.app.Activity;
+          import android.content.pm.PackageManager;
           import android.os.Bundle;
+          import android.webkit.PermissionRequest;
           import android.webkit.WebChromeClient;
           import android.webkit.WebSettings;
           import android.webkit.WebView;
           import android.webkit.WebViewClient;
-          import android.webkit.ValueCallback;
-          import android.content.Intent;
-          import android.net.Uri;
 
           public class MainActivity extends Activity {
               private WebView webView;
-              private ValueCallback<Uri[]> filePathCallback;
 
               @Override
               protected void onCreate(Bundle savedInstanceState) {
                   super.onCreate(savedInstanceState);
 
-                  webView = new WebView(this);
-                  setContentView(webView);
+                  if (android.os.Build.VERSION.SDK_INT >= 23 &&
+                      checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                      requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 2001);
+                  }
 
+                  webView = new WebView(this);
                   WebSettings settings = webView.getSettings();
                   settings.setJavaScriptEnabled(true);
                   settings.setDomStorageEnabled(true);
                   settings.setDatabaseEnabled(true);
                   settings.setAllowFileAccess(true);
                   settings.setAllowContentAccess(true);
-                  settings.setBuiltInZoomControls(false);
-                  settings.setDisplayZoomControls(false);
                   settings.setMediaPlaybackRequiresUserGesture(false);
+                  settings.setSupportZoom(false);
 
                   webView.setWebViewClient(new WebViewClient());
                   webView.setWebChromeClient(new WebChromeClient() {
                       @Override
-                      public boolean onShowFileChooser(
-                              WebView view,
-                              ValueCallback<Uri[]> callback,
-                              FileChooserParams params) {
-
-                          if (filePathCallback != null) {
-                              filePathCallback.onReceiveValue(null);
-                          }
-
-                          filePathCallback = callback;
-
-                          try {
-                              startActivityForResult(params.createIntent(), 1001);
-                          } catch (Exception e) {
-                              filePathCallback = null;
-                              callback.onReceiveValue(null);
-                              return false;
-                          }
-                          return true;
+                      public void onPermissionRequest(final PermissionRequest request) {
+                          runOnUiThread(() -> request.grant(request.getResources()));
                       }
                   });
 
-                  webView.loadUrl("file:///android_asset/index.html");
-              }
-
-              @Override
-              protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-                  super.onActivityResult(requestCode, resultCode, data);
-
-                  if (requestCode == 1001 && filePathCallback != null) {
-                      Uri[] results = null;
-
-                      if (resultCode == RESULT_OK && data != null) {
-                          if (data.getClipData() != null) {
-                              int count = data.getClipData().getItemCount();
-                              results = new Uri[count];
-                              for (int i = 0; i < count; i++) {
-                                  results[i] = data.getClipData().getItemAt(i).getUri();
-                              }
-                          } else if (data.getData() != null) {
-                              results = new Uri[] { data.getData() };
-                          }
-                      }
-
-                      filePathCallback.onReceiveValue(results);
-                      filePathCallback = null;
-                  }
+                  setContentView(webView);
+                  webView.loadUrl("https://myexpenses.wuaze.com/login.php");
               }
 
               @Override
               public void onBackPressed() {
-                  if (webView.canGoBack()) {
+                  if (webView != null && webView.canGoBack()) {
                       webView.goBack();
                   } else {
                       super.onBackPressed();
@@ -237,6 +210,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: My-Expense-APK
+          name: My-Expenses-2.0-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
