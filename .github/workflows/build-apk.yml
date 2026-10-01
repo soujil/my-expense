@@ -152,6 +152,8 @@ jobs:
           import android.app.Activity;
           import android.content.pm.PackageManager;
           import android.os.Bundle;
+          import android.view.View;
+          import android.view.WindowInsets;
           import android.webkit.PermissionRequest;
           import android.webkit.WebChromeClient;
           import android.webkit.WebSettings;
@@ -171,6 +173,21 @@ jobs:
                   }
 
                   webView = new WebView(this);
+
+                  // Android 15 / targetSdk 35 uses edge-to-edge by default.
+                  // Keep the web app content below the system status bar so the
+                  // phone clock/battery never overlaps the app header.
+                  if (android.os.Build.VERSION.SDK_INT >= 30) {
+                      getWindow().setDecorFitsSystemWindows(false);
+                  }
+
+                  webView.setOnApplyWindowInsetsListener((view, insets) -> {
+                      int topInset = insets.getInsets(WindowInsets.Type.statusBars()).top;
+                      int bottomInset = insets.getInsets(WindowInsets.Type.navigationBars()).bottom;
+                      view.setPadding(0, topInset, 0, bottomInset);
+                      return insets;
+                  });
+
                   WebSettings settings = webView.getSettings();
                   settings.setJavaScriptEnabled(true);
                   settings.setDomStorageEnabled(true);
